@@ -13,6 +13,14 @@ public class RoundStart : MonoBehaviour {
 
     void Start()
     {
+        //测试时添加一个角色
+        HeroAttr ha = new HeroAttr();
+        ha.heroId = 0;
+        Player p = new Player();
+        p.setHeroAttr(ha, ha, ha);
+        GameManager.getInstance().setMainPlayer(p);
+        GameManager.getInstance().getMainPlayer().Instantiate(new Vector3(-5, -2, 0), Quaternion.identity);
+
         // 开启倒计时
         leftTime = 60;
         InvokeRepeating("DoCountDown", 0, 1);
@@ -50,6 +58,7 @@ public class RoundStart : MonoBehaviour {
     }
     public void ReadyToFight()
     {
+        GameManager.getInstance().getMainPlayer().getHero().StartGame();
         // 调整字体颜色和斜体，开始倒计时
         readyText.color = new Color(200, 0, 0);
         readyText.fontStyle = FontStyle.Italic;
