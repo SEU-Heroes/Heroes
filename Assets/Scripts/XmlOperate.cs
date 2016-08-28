@@ -9,7 +9,7 @@ using System.Xml;
 class XmlOperate
 {
 
-    public const String XmlFilePath = "H:\\study\\shixun\\Heros.xml";
+    static public String XmlFilePath;
 
     ///<summary>
     ///获得英雄的信息，由于暂时没有英雄类和技能类，只能返回null，然后把所有信息打印出来
@@ -18,6 +18,7 @@ class XmlOperate
     ///作者：韩璐璐
     public static HeroAttr GetHeroInformation(String name)
     {
+        XmlFilePath = Application.dataPath + "\\Heros.xml";
         ///初始化一个xml实例
         XmlDocument myXmlDoc = new XmlDocument();
         ///加载xml文件（参数为xml文件的路径）
@@ -54,13 +55,14 @@ class XmlOperate
 
 
                         XmlNodeList skillList = secondNode.ChildNodes;
+                        List<InputReceiver.dir> dirList=new List<InputReceiver.dir>();
                         foreach (XmlNode skillNode in skillList)
                         {
                             ///获得技能的各个属性
                             if (skillNode.Name == "IsCreated")
                             {
                                 bool isCreated = (int.Parse(skillNode.Value) == 0) ? false : true;
-                                skill.isCreator = isCreated;
+                                skill._isCreator = isCreated;
                             }
                             if (skillNode.Name == "offset")
                             {
@@ -78,41 +80,61 @@ class XmlOperate
                                     }
                                 }
                                 Vector3 vector = new Vector3(x, y, 0);
-                                skill.offset = vector;
+                                skill._offset = vector;
                             }
                             if (skillNode.Name == "AddRage")
                             {
                                 int addRage = int.Parse(skillNode.Value);
-                                skill.AddRage = addRage;
+                                skill._AddRage = addRage;
                             }
                             if (skillNode.Name == "aggressivity")
                             {
                                 int aggressivity = int.Parse(skillNode.Value);
-                                skill.aggressivity = aggressivity;
+                                skill._aggressivity = aggressivity;
                             }
                             if (skillNode.Name == "skillId")
                             {
                                 int skillId = int.Parse(skillNode.Value);
-                                skill.skillId = skillId;
+                                skill._skillId = skillId;
                             }
                             if (skillNode.Name == "BeforeAT")
                             {
                                 int beforeAT = int.Parse(skillNode.Value);
-                                skill.BeforeAT = beforeAT;
+                                skill._BeforeAT = beforeAT;
                             }
-                            if (skillNode.Name == "AfterAT")
+                            if (skillNode.Name == "firstAfterAT")
                             {
-                                int afterAT = int.Parse("AfterAT");
-                                skill.AfterAT = afterAT;
+                                int afterAT = int.Parse(skillNode.Value);
+                                skill._AfterATFirst = afterAT;
                             }
+                            if (skillNode.Name == "lastAfterAT")
+                            {
+                                int afterAT = int.Parse(skillNode.Value);
+                                skill._AfterATLast = afterAT;
+                            }
+
                             if (skillNode.Name == "isChild")
                             {
-                                bool isChild = (int.Parse("isChild") == 0) ? false : true;
-                                skill.isChild = isChild;
+                                bool isChild = (int.Parse(skillNode.Value) == 0) ? false : true;
+                                skill._isChild = isChild;
+                            }
+                            if (skillNode.Name == "time")
+                            {
+                                int time = int.Parse(skillNode.Value);
+                                skill._Time= time;
+                            }
+                            if (skillNode.Name == "tralls")
+                            {
+                                XmlNodeList trallNodeList = skillNode.ChildNodes;
+                                foreach (XmlNode trallNode in trallNodeList)
+                                {
+                                    InputReceiver.dir dir = (InputReceiver.dir)(int.Parse(trallNode.Value));
+                                    dirList.Add(dir);
+                                }
                             }
                         }
                         ///把技能添加到技能树
-                        skillTree.Add(null, skill);
+                        skillTree.Add(dirList, skill);
                     }
                 }
                 ///构造英雄

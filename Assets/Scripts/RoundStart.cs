@@ -18,37 +18,37 @@ public class RoundStart : MonoBehaviour {
     }
 
     void Start()
-    {
+    {/*
         //测试时添加一个角色
         HeroAttr ha = new HeroAttr();
-        ha.heroId = 0;
-        ha.skills = new SkillTree();
+        ha._heroId = 0;
+        ha._skills = new SkillTree();
 
         List<InputReceiver.dir> input = new List<InputReceiver.dir>();
         input.Add(InputReceiver.dir.right);
 
         Skill xuanFengTui = new Skill(0, 0);
-        xuanFengTui.skillName = "XuanFengTui";
-        xuanFengTui.aggressivity = 60;
-        ha.skills.Add(input, xuanFengTui);
+        xuanFengTui._skillName = "XuanFengTui";
+        xuanFengTui._aggressivity = 60;
+        ha._skills.Add(input, xuanFengTui);
 
         List<InputReceiver.dir> input1 = new List<InputReceiver.dir>();
         input1.Add(InputReceiver.dir.up);
         Skill jump = new Skill(0, 1);
-        jump.skillName = "Jump";
-        jump.aggressivity = 0;
-        ha.skills.Add(input1, jump);
+        jump._skillName = "Jump";
+        jump._aggressivity = 0;
+        ha._skills.Add(input1, jump);
 
         Player p = new Player();
-        p.setHeroAttr(ha, ha, ha);
-        GameManager.getInstance().setMainPlayer(p);
-        GameManager.getInstance().getMainPlayer().Instantiate(new Vector3(-3, -2, 0), Quaternion.identity);
+        p.SetHeroAttr(ha, ha, ha);
+        GameManager.GetInstance().SetMainPlayer(p);
+        GameManager.GetInstance().GetMainPlayer().Instantiate(new Vector3(-3, -2, 0), Quaternion.identity);
         Player p2 = new Player();
-        p2.setHeroAttr(ha, ha, ha);
-        GameManager.getInstance().setOtherPlayer(p2);
-        GameManager.getInstance().getOtherPlayer().Instantiate(new Vector3(3, -2, 0), Quaternion.identity);
-        p2.getHero().isFacingLeft = true;
-
+        p2.SetHeroAttr(ha, ha, ha);
+        GameManager.GetInstance().SetOtherPlayer(p2);
+        GameManager.GetInstance().GetOtherPlayer().Instantiate(new Vector3(3, -2, 0), Quaternion.identity);
+        p2.GetHero()._isFacingLeft = true;
+        */
 
         // 开启倒计时
         leftTime = 60;
@@ -87,7 +87,8 @@ public class RoundStart : MonoBehaviour {
     }
     public void ReadyToFight()
     {
-        GameManager.getInstance().getMainPlayer().getHero().StartGame();
+        GameManager.GetInstance().GetMainPlayer().GetHero().StartGame();
+        GameManager.GetInstance().GetOtherPlayer().GetHero().StartGame();
 
         // 调整字体颜色和斜体，开始倒计时
         readyText.color = new Color(200, 0, 0);

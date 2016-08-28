@@ -34,11 +34,8 @@ public class InputArea : MonoBehaviour
            Debug.Log("111");
             if (Input.GetTouch(1).phase == TouchPhase.Began)
             {
-          
                 point = Camera.main.ScreenToWorldPoint(Input.GetTouch(1).position);
                 InputReceiver.getInstance().startInput(point);
-               
-
             }
             else if ((Input.GetTouch(1).phase == TouchPhase.Moved) || (Input.GetTouch(1).phase == TouchPhase.Stationary))
             {

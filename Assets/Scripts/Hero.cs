@@ -2,306 +2,394 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/*
+ * 需求：
+ * 能完成移动跳跃操作
+ * 能处理玩家的输入
+ * 能释放技能
+ */
+
+/*
+ * 版本 V1.0 能处理玩家输入并释放技能或者移动跳跃
+ */
+
 class Hero : MonoBehaviour {
 
+    //角色状态枚举
     public enum state { still, jumping, floating, dizzy, falling, blocking, moving, BeforeAT, FirstHalfAfterAT, LastHalfAfterAT, unControlable, acting };
 
+    //角色当前状态
+    public state _nowState = state.unControlable;//角色目前的状态
     [HideInInspector]
-    public HeroAttr attr;
-
+    public HeroAttr _attr;//角色属性
     [HideInInspector]
-    public bool isFacingLeft = false;
+    public bool _isFacingLeft = false;//角色是否朝向左边
+    Skill _nowSkill;//正在释放的技能
+    bool isJumping;//是否正在跳跃
 
-    public float jumpForce;
+    //角色固定属性
+    public float _jumpForce;//跳跃力
+    public float _moveSpeed;//角色移动速度
 
-    float moveTime;
-    Vector3 aimPosition;
-    float speed;
-    public float moveSpeed;
-    float actTime;
+    //算法所需变量（不用管）
+    Vector3 _aimPosition;//本次移动的目的地
+    float _moveTime;//本次移动需要的时间
+    float _speed;//本次移动需要的速度
+    float _actTime;//本次动作已经用掉的时间
+    float _scaleX;//角色的X轴缩放值
 
-    public state nowState = state.unControlable;
-
-    Skill nowSkill;
-
-    Animator anim;
-
-    float scaleX;
-
-    Transform groundCheck;
-
-    bool isJumping;
+    //所需引用
+    Animator _anim;//角色的动画控制器
+    Transform _groundCheck;//角色脚底的射线检测器
 
 	// Use this for initialization
 	void Start () {
-        anim = gameObject.GetComponent<Animator>();
-        scaleX = transform.localScale.x;
-        groundCheck = transform.Find("groundCheck");
+        _anim = gameObject.GetComponent<Animator>();
+        _groundCheck = transform.Find("groundCheck");
+        //取得角色的X轴缩放值
+        _scaleX = transform.localScale.x;
 	}
 
     void Update()
     {
-        Debug.Log(nowState);
-        if (!(isJumping = checkJump()))
+        //判断是否在空中，并在落地瞬间将状态改为静止
+        if (!(isJumping = CheckJump()))
         {
-            if (nowState == state.jumping)
+            if (_nowState == state.jumping)
             {
-                nowState = state.still;
+                _nowState = state.still;
             }
         }
+
+        //PC机上操作检测
         if (Input.GetKeyDown(KeyCode.D))
         {
             List<InputReceiver.dir> list = new List<InputReceiver.dir>();
             list.Add(InputReceiver.dir.right);
-            handInput(list);
+            HandInput(list);
         }
         else if(Input.GetKeyDown(KeyCode.W))
         {
             List<InputReceiver.dir> list = new List<InputReceiver.dir>();
             list.Add(InputReceiver.dir.up);
-            handInput(list);
+            HandInput(list);
         }
     }
 
     void FixedUpdate()
     {
-        turnBack();
-        if (moveTime != 0)
+        //每一帧检测角色的朝向
+        TurnBack();
+        //如果角色正在移动，改变角色的移动状态
+        if (_moveTime != 0)
         {
-            moveTime -= Time.deltaTime;
-            if (moveTime < 0)
-                moveTime = 0;
-            move();
+            _moveTime -= Time.deltaTime;
+            if (_moveTime < 0)
+                _moveTime = 0;
+            Move();
         }
-
-        if (nowState == state.acting)
+        //放技能时每一帧改变角色状态
+        if (_nowState == state.acting)
         {
-            actTime += Time.deltaTime;
-            nowSkill.update(this, actTime);
+            _actTime += Time.deltaTime;
+            _nowSkill._update(this, _actTime);
         }
     }
 
     /// <summary>
-    /// 
+    /// 处理屏幕轨迹输入
     /// </summary>
-    /// <param name="input"></param>
-    public void handInput(List<InputReceiver.dir> input)
+    /// <param name="input">轨迹序列</param>
+    /// 作者：胡皓然
+    public void HandInput(List<InputReceiver.dir> input)
     {
-        int skillable = isSkillable();
+        //判断是否能释放技能
+        int skillable = IsSkillable();
         if (skillable == 0)
         {
             return;
         }
         else
         {
-            Skill skill = checkSkill(input);
+            //判断该轨迹是否有相应技能
+            Skill skill = CheckSkill(input);
             if (skill != null)
             {
-                startSkill(skill);
-                actTime = 0;
+                StartSkill(skill);
+                _actTime = 0;
             }
         }
     }
 
-    public void setFacing(bool isLeft)
+    /// <summary>
+    /// 设置角色的朝向
+    /// </summary>
+    /// <param name="isLeft"></param>
+    /// 作者：胡皓然
+    public void SetFacing(bool isLeft)
     {
-        isFacingLeft = isLeft;
+        _isFacingLeft = isLeft;
     }
 
-    public void handDirection(InputReceiver.joyDir dir)
+    /// <summary>
+    /// 处理方向输入
+    /// </summary>
+    /// <param name="dir">输入的方向</param>
+    /// 作者：胡皓然
+    public void HandDirection(InputReceiver.joyDir dir)
     {
         if (dir == InputReceiver.joyDir.down)
         {
-            if(isDefensable())
+            //防御部分
+            if(IsDefensable())
             {
-                defense();
+                Defense();
             }
         }
         else if (dir == InputReceiver.joyDir.none || dir == InputReceiver.joyDir.up)
         {
-            stay();
+            //无操作部分
+            Stay();
         }
         else
         {
-            if (isMoveable())
+            //移动部分
+            if (IsMoveable())
             {
-                nowState = state.moving;
-                GetComponent<Rigidbody2D>().velocity = new Vector2(InputReceiver.joyDir.left == dir ? -moveSpeed : moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
-                isFacingLeft = InputReceiver.joyDir.left == dir ? true : false;
+                _nowState = state.moving;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(InputReceiver.joyDir.left == dir ? -_moveSpeed : _moveSpeed, GetComponent<Rigidbody2D>().velocity.y);
+                _isFacingLeft = InputReceiver.joyDir.left == dir ? true : false;
             }
         }
     }
 
-    public void touchStay(List<InputReceiver.dir> input)
+    /// <summary>
+    /// 处理当玩家的手指在某一点停留时间过长的情况
+    /// </summary>
+    /// <param name="input">玩家目前已经输入的序列</param>
+    /// 作者：胡皓然
+    public void TouchStay(List<InputReceiver.dir> input)
     {
 
     }
 
+    /// <summary>
+    /// 游戏开始时设置角色状态
+    /// </summary>
+    /// 作者：胡皓然
     public void StartGame()
     {
-        nowState = state.still;
+        _nowState = state.still;
     }
 
-    void startSkill(Skill skill)
+    /// <summary>
+    /// 释放技能时角色移动
+    /// </summary>
+    /// <param name="distance">移动距离</param>
+    /// <param name="time">所需时间</param>
+    /// 作者：胡皓然
+    public void Move(int distance, float time)
     {
-        GameObject o = GameManager.getInstance().Instantiate(GameManager.factory.getSkillObject(attr.heroId, skill.skillId), transform.localPosition + skill.offset, Quaternion.identity);
-        o.transform.Rotate(isFacingLeft ? new Vector3(0, 180, 0) : new Vector3(0, 0, 0));
-        if (!skill.isCreator)
+        _moveTime = time;
+        _speed = distance / time;
+        if (_isFacingLeft)
+        {
+            _aimPosition = new Vector3(transform.localPosition.x - distance, transform.localPosition.y, transform.localPosition.z);
+        }
+        else
+        {
+            _aimPosition = new Vector3(transform.localPosition.x + distance, transform.localPosition.y, transform.localPosition.z);
+        }
+    }
+
+    //跳跃
+    public void Jump()
+    {
+        if (IsJumpable())
+        {
+            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, _jumpForce));
+            _nowState = state.jumping;
+        }
+    }
+
+    /// <summary>
+    /// 技能攻击到敌人后增加怒气值
+    /// </summary>
+    /// <param name="h">攻击到的角色</param>
+    /// 作者：胡皓然
+    public void Hit(Hero h)
+    {
+        RageAdd(_nowSkill._AddRage);
+    }
+
+    /// <summary>
+    /// 技能释放完成，由动画事件调用
+    /// </summary>
+    /// 作者：胡皓然
+    public void SkillEnd()
+    {
+        _nowSkill._end(this);
+    }
+
+    /// <summary>
+    /// 血量减少
+    /// </summary>
+    /// <param name="num"></param>
+    /// 作者：胡皓然
+    public void HPReduce(int num)
+    {
+        int realReduce = num;
+        if (_nowState == state.blocking)
+        {
+            realReduce = num - HeroAttr._defenseForce;
+        }
+        _attr._HP -= realReduce;
+        GameManager.GetInstance().HPReduce(this, num);
+    }
+
+    /// <summary>
+    /// 气力值增加
+    /// </summary>
+    /// <param name="addRage"></param>
+    /// 作者：胡皓然
+    void RageAdd(int addRage)
+    {
+        int count;
+        _attr._Rage += addRage;
+        if (_attr._Rage > HeroAttr._maxRage)
+        {
+            count = _attr._Rage - HeroAttr._maxRage;
+            _attr._Rage = HeroAttr._maxRage;
+            if (_attr._fullRage >= 3)
+            {
+                _attr._fullRage = 3;
+            }
+            else
+            {
+                _attr._fullRage++;
+                _attr._Rage = count;
+            }
+        }       
+    }
+
+    /// <summary>
+    /// 开始释放技能
+    /// </summary>
+    /// <param name="skill">需要释放的技能</param>
+    /// 作者：胡皓然
+    void StartSkill(Skill skill)
+    {
+        //生成技能物体
+        //GameObject o = GameManager.GetInstance().Instantiate(GameManager._factory.GetSkillObject(_attr._heroId, skill._skillId), transform.localPosition + skill._offset, Quaternion.identity);
+        GameObject o = (GameObject)Camera.Instantiate(GameManager._factory.GetSkillObject(_attr._heroId, skill._skillId), transform.localPosition + skill._offset, Quaternion.identity);
+        o.transform.Rotate(_isFacingLeft ? new Vector3(0, 180, 0) : new Vector3(0, 0, 0));
+        //判断是否将技能物体作为角色的子物体
+        if (!skill._isChild)
         {
             o.transform.parent = transform;
         }
         o.GetComponent<Trigger>().skill = skill;
-        nowSkill = skill;
-        skill.start(this);
+        _nowSkill = skill;
+        skill._start(this);
     }
 
-    Skill checkSkill(List<InputReceiver.dir> input)
+    /// <summary>
+    /// 判断是否有相应轨迹的技能
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns>有技能则返回相应技能，没有就返回null</returns>
+    /// 作者：胡皓然
+    Skill CheckSkill(List<InputReceiver.dir> input)
     {
-        return attr.skills.checkSkill(input);
+        return _attr._skills.checkSkill(input);
     }
 
     /// <summary>
     /// 判断当前是否能释放技能
     /// </summary>
     /// <returns>0：不能释放 1：能正常释放 2：能连击释放</returns>
-    int isSkillable()
+    int IsSkillable()
     {
-        if (nowState == state.still || nowState == state.jumping || nowState == state.moving || nowState == state.blocking )
+        if (_nowState == state.still || _nowState == state.jumping || _nowState == state.moving || _nowState == state.blocking)
         {
             return 1;
         }
-        else if(nowState == state.FirstHalfAfterAT)
+        else if (_nowState == state.FirstHalfAfterAT)
         {
             return 2;
         }
         return 0;
     }
 
-    bool isMoveable()
+    //判断是否可以移动
+    bool IsMoveable()
     {
-        if (nowState == state.still || nowState == state.jumping || nowState == state.moving || nowState == state.blocking)
+        if (_nowState == state.still || _nowState == state.jumping || _nowState == state.moving || _nowState == state.blocking)
             return true;
         return false;
     }
 
-    bool isJumpable()
+    //判断是否可以跳跃
+    bool IsJumpable()
     {
-        if (nowState == state.still || nowState == state.moving || nowState == state.blocking)
+        if (_nowState == state.still || _nowState == state.moving || _nowState == state.blocking)
         {
             return true;
         }
         return true;
     }
 
-    bool isDefensable()
+    //判断是否可以防御
+    bool IsDefensable()
     {
-        if (nowState == state.still || nowState == state.moving || nowState == state.blocking || nowState == state.FirstHalfAfterAT)
+        if (_nowState == state.still || _nowState == state.moving || _nowState == state.blocking || _nowState == state.FirstHalfAfterAT)
             return true;
         return false;
     }
 
+    //判断是否可以被攻击
     bool Hitable()
     {
-        if (nowState == state.still || nowState == state.jumping || nowState == state.moving || nowState == state.blocking || nowState == state.FirstHalfAfterAT || nowState == state.floating || nowState == state.dizzy || nowState == state.BeforeAT || nowState == state.LastHalfAfterAT || nowState == state.acting)
+        if (_nowState == state.still || _nowState == state.jumping || _nowState == state.moving || _nowState == state.blocking || _nowState == state.FirstHalfAfterAT || _nowState == state.floating || _nowState == state.dizzy || _nowState == state.BeforeAT || _nowState == state.LastHalfAfterAT || _nowState == state.acting)
             return true;
         return false;
     }
 
-    void move()
+    /// <summary>
+    /// 技能移动的算法辅助函数
+    /// </summary>
+    /// 作者：胡皓然
+    void Move()
     {
-        transform.localPosition = new Vector3(Mathf.Lerp(transform.localPosition.x, aimPosition.x, speed * Time.deltaTime), transform.localPosition.y, transform.localPosition.z);
+        transform.localPosition = new Vector3(Mathf.Lerp(transform.localPosition.x, _aimPosition.x, _speed * Time.deltaTime), transform.localPosition.y, transform.localPosition.z);
     }
 
-    void stay()
+    //停止角色左右移动
+    void Stay()
     {
-        if(nowState == state.moving)
+        if (_nowState == state.moving)
             GetComponent<Rigidbody2D>().velocity = new Vector2(0, GetComponent<Rigidbody2D>().velocity.y);
     }
 
-    public void move(int distance, float time)
+    //防御
+    void Defense()
     {
-        moveTime = time;
-        speed = distance / time;
-        if (isFacingLeft)
-        {
-            aimPosition = new Vector3(transform.localPosition.x - distance, transform.localPosition.y, transform.localPosition.z);
-        }
+        _nowState = state.blocking;
+        _anim.SetBool("defense", true);
+    }
+
+    //判断是否在跳跃
+    bool CheckJump()
+    {
+        return !Physics2D.Linecast(transform.position, _groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
+    }
+
+    //按照当前朝向设置角色UI朝向
+    void TurnBack()
+    {
+        if (_isFacingLeft)
+            transform.localScale = new Vector3(-_scaleX, transform.localScale.y, transform.localScale.z);
         else
-        {
-            aimPosition = new Vector3(transform.localPosition.x + distance, transform.localPosition.y, transform.localPosition.z);
-        }
-    }
-
-    bool checkJump()
-    {
-        return !Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
-    }
-
-    public void Jump()
-    {
-        if (isJumpable())
-        {
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce));
-            nowState = state.jumping;
-        }
-    }
-
-    public void hit(Hero h)
-    {
-        RageAdd(nowSkill.AddRage);
-    }
-
-    public void actEnd()
-    {
-        nowSkill.end(this);
-    }
-
-    public void HPReduce(int num)
-    {
-        if (nowState == state.blocking)
-        {
-            int realReduce = num - HeroAttr.defenseForce;
-        }
-        attr.HP -= num;
-        GameManager.getInstance().HPReduce(this, num);
-    }
-
-    void RageAdd(int addRage)
-    {
-        int count;
-        attr.Rage += addRage;
-        if (attr.Rage > HeroAttr.maxRage)
-        {
-            count = attr.Rage - HeroAttr.maxRage;
-            attr.Rage = HeroAttr.maxRage;
-            if (attr.fullRage >= 3)
-            {
-                attr.fullRage = 3;
-            }
-            else
-            {
-                attr.fullRage++;
-                attr.Rage = count;
-            }
-        }       
-    }
-
-    public void skillEnd()
-    {
-        nowSkill.end(this);
-    }
-
-    void turnBack()
-    {
-        if(isFacingLeft)
-            transform.localScale = new Vector3(-scaleX, transform.localScale.y, transform.localScale.z);
-        else
-            transform.localScale = new Vector3(scaleX, transform.localScale.y, transform.localScale.z);
-    }
-
-    void defense()
-    {
-        nowState = state.blocking;
-        anim.SetBool("defense", true);
+            transform.localScale = new Vector3(_scaleX, transform.localScale.y, transform.localScale.z);
     }
 }

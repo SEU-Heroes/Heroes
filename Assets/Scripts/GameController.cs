@@ -9,10 +9,9 @@ public class GameController : MonoBehaviour {
     {
         roundNumber = 1;
     }
+
     public static GameController GetInstance()
     {
-        if (_instance == null)
-            _instance = new GameController();
         return _instance;
     }
 
@@ -21,6 +20,7 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Awake () 
     {
+        _instance = this;
         roundNumber = 1;
 	}
 

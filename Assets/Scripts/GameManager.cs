@@ -1,76 +1,149 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
-class GameManager{
+/*
+ * 需求：
+ * 能在场景内生成物体
+ * 能管理两个玩家的信息
+ * 能管理场景里的东西
+ */
 
-    //Attr
-    public int distanceStander;
 
-    public enum mode {none, player, computer };
+/*
+ * 版本：V1.00 修改时间 2016.8.28 修改内容：管理玩家的信息
+ */
+class GameManager:MonoBehaviour{
 
-    mode nowMode = mode.none;
+    //游戏内统一数据
+    static public int _distanceStander;//距离标准值
 
-    static GameManager instance;
+    //游戏模式管理
+    public enum mode {none, player, computer, story,tutorial,skillWatch};//游戏模式枚举
+    mode _nowMode = mode.computer;//当前的游戏模式
 
-    Player player1, player2;
+    //单例
+    static GameManager _instance;
 
-    static public HeroFactory factory;
+    //角色管理
+    static public HeroFactory _factory;//角色工厂
+    Player _player1, _player2;//两个角色
 
-    GameManager()
+    void Awake()
     {
-        factory = Camera.main.GetComponent<HeroFactory>();
+        _instance = this;
     }
 
-    static public GameManager getInstance()
+    void Start()
     {
-        if (instance == null)
-        {
-            instance = new GameManager();
-        }
-        return instance;
+        //最开始取得角色工厂引用
+        _factory = HeroFactory.instance;
+        DontDestroyOnLoad(gameObject);
     }
 
+    /// <summary>
+    /// 单例模式
+    /// </summary>
+    /// <returns>单例</returns>
+    /// 作者：胡皓然
+    static public GameManager GetInstance()
+    {
+        return _instance;
+    }
+
+    /// <summary>
+    /// 在场景内实例化一个物体
+    /// </summary>
+    /// <param name="go">需要实例化的物体引用</param>
+    /// <param name="position">实例化物体的位置</param>
+    /// <param name="q">实例化物体的</param>
+    /// <returns></returns>
+    /// 作者：胡皓然
     public GameObject Instantiate(GameObject go, Vector3 position, Quaternion q)
     {
         return (GameObject)Camera.Instantiate(go, position, q);
     }
 
-    public Player getMainPlayer()
+    //得到玩家的对象
+    public Player GetMainPlayer()
     {
-        return player1;
+        return _player1;
     }
 
-    public Player getOtherPlayer()
+    //得到敌方的对象
+    public Player GetOtherPlayer()
     {
-        return player2;
+        return _player2;
     }
 
-    public void setMainPlayer(Player p)
+    public void SetMainPlayer(Player p)
     {
-        player1 = p;
+        _player1 = p;
     }
 
-    public void setOtherPlayer(Player p)
+    public void SetOtherPlayer(Player p)
     {
-        player2 = p;
+        _player2 = p;
     }
 
-    public void setMode(mode m)
+    //设置模式
+    public void SetMode(mode m)
     {
-        nowMode = m;
+        _nowMode = m;
     }
 
-    public void HPReduce(Hero h,int num)
+    /// <summary>
+    /// 改变角色的HPUI（减少时）
+    /// </summary>
+    /// <param name="h">要减少HP的角色对象</param>
+    /// <param name="num">要减少的HP数值</param>
+    /// 作者：胡皓然
+    public void HPReduce(Hero hero,int num)
     {
-        Debug.Log("111");
-        if (h == player1.getHero())
+        if (hero == _player1.GetHero())
         {
-            MainScene.instance.HPReducce(1, num);
+            MainScene._instance.HPReducce(1, num);
         }
         else
         {
-            MainScene.instance.HPReducce(2, num);
+            MainScene._instance.HPReducce(2, num);
         }
+    }
+
+    public void StartFightScene(List<string> names)
+    {
+        setPlayer(names[0], names[1], names[2]);
+        ChangeScene("BattleScene-boat");
+    }
+
+    /// <summary>
+    /// 设置人机的角色，玩家选择三个，电脑与玩家相同
+    /// </summary>
+    /// <param name="heroName1"></param>
+    /// <param name="heroName2"></param>
+    /// <param name="heroName3"></param>
+    void setPlayer(string heroName1,string heroName2,string heroName3)
+    {
+        _player1 = new Player();
+        _player1.SetHeroAttr(XmlOperate.GetHeroInformation(heroName1),XmlOperate.GetHeroInformation(heroName2),XmlOperate.GetHeroInformation(heroName3));
+        _player2 = new Player();
+        _player2.SetHeroAttr(XmlOperate.GetHeroInformation(heroName1), XmlOperate.GetHeroInformation(heroName2), XmlOperate.GetHeroInformation(heroName3));
+    }
+
+    /// <summary>
+    /// 改变当前场景
+    /// </summary>
+    /// <param name="sceneName">要转到的场景名字</param>
+    void ChangeScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void InstantiatePlayers()
+    {
+        _player1.Instantiate(new Vector3(-5, -2, 0), Quaternion.identity);
+        _player2.Instantiate(new Vector3(5, -2, 0), Quaternion.identity);
+        _player2.GetHero()._isFacingLeft = true;
     }
 }

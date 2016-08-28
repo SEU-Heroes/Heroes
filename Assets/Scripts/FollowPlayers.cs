@@ -9,7 +9,7 @@ using System.Collections;
   * 版本 V1.00 修改时间2016.8.26 修改内容-能够平滑跟踪角色并改变可视大小
   */
 
-public class FollowPlayers : MonoBehaviour {
+class FollowPlayers : MonoBehaviour {
 
     private Camera camera;
 
@@ -24,9 +24,9 @@ public class FollowPlayers : MonoBehaviour {
     }
 
     void Start()
-    {
-        player1 = GameManager.getInstance().getMainPlayer().getHero().gameObject.transform;
-        player2 = GameManager.getInstance().getOtherPlayer().getHero().gameObject.transform;
+    {/*
+        player1 = GameManager.GetInstance().GetMainPlayer().GetHero().gameObject.transform;
+        player2 = GameManager.GetInstance().GetOtherPlayer().GetHero().gameObject.transform;*/
     }
 
     /// <summary>
@@ -64,5 +64,15 @@ public class FollowPlayers : MonoBehaviour {
             transform.position = new Vector3(-8.5f + size * 16 / 9, transform.position.y, -10);
         if (transform.position.x + size * 16 / 9 > 8.5f)
             transform.position = new Vector3(8.5f - size * 16 / 9, transform.position.y, -10);
+    }
+
+    public void setPlayer(Hero player)
+    {
+        if (player1 != null)
+        {
+            player2 = player.gameObject.transform;
+        }else{
+            player1 = player.gameObject.transform;
+        }
     }
 }

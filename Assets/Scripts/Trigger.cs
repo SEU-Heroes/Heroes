@@ -11,7 +11,7 @@ class Trigger : MonoBehaviour {
     {
         if (collision.gameObject.tag == Tags.player02)
         {
-            skill.hit(collision.gameObject.GetComponent<Hero>());
+            skill._hit(collision.gameObject.GetComponent<Hero>());
             Vector3 randomPos = new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), 0);
             Instantiate(hitPrefab, collision.transform.position + randomPos, collision.transform.rotation);
         }

@@ -44,7 +44,7 @@ public class JoyInput: MonoBehaviour
             JInput.Clear();
            
 
-            GameManager.getInstance().getMainPlayer().handDirection(InputReceiver.joyDir.none);
+            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.none);
         }
     }
 
@@ -73,27 +73,27 @@ public class JoyInput: MonoBehaviour
         double angleCos = last1 / last2;
         if ((Mathf.Cos(Mathf.PI / 4)) <= angleCos)
         {
-            GameManager.getInstance().getMainPlayer().handDirection(InputReceiver.joyDir.right);
+            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.right);
             
         }
         else if ((Mathf.Cos((Mathf.PI * 3) / 4) <= angleCos) && (angleCos < Mathf.Cos(Mathf.PI / 4)) && (y >= 0))
         {
-            GameManager.getInstance().getMainPlayer().handDirection(InputReceiver.joyDir.up);
+            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.up);
             
         }
         else if ((angleCos < Mathf.Cos((Mathf.PI * 5) / 4)) && (angleCos >= Mathf.Cos(Mathf.PI)))
         {
-            GameManager.getInstance().getMainPlayer().handDirection(InputReceiver.joyDir.left);
+            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.left);
           
         }
         else if ((Mathf.Cos((Mathf.PI * 5) / 4) <= angleCos) && (angleCos < Mathf.Cos((Mathf.PI * 7) / 4)) && y < 0)
         {
-            GameManager.getInstance().getMainPlayer().handDirection(InputReceiver.joyDir.down);
+            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.down);
            
         }
         else
         {
-            GameManager.getInstance().getMainPlayer().handDirection(InputReceiver.joyDir.none);
+            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.none);
            
         }
     }

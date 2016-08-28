@@ -56,7 +56,7 @@ class InputReceiver
         if (isInputing)
         {
           
-           GameManager.getInstance().getMainPlayer().handInput(input);
+           GameManager.GetInstance().GetMainPlayer().HandInput(input);
             isInputing = false;
             return true;
         }
@@ -95,7 +95,7 @@ class InputReceiver
 
     void handStay()
     {
-       GameManager.getInstance().getMainPlayer().touchStay(input);
+       GameManager.GetInstance().GetMainPlayer().TouchStay(input);
     }
 
     bool checkDirection()

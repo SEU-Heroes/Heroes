@@ -1,6 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * 需求：
+ * 有所有技能的相应函数
+ * 能按照人物和技能ID返回相应的技能函数
+ */
+
+/*
+ * 版本 V1.0 有旋风腿和跳跃的函数
+ */
+
 class SkillScheduler{
     static public Skill.Start getStartFunction(int heroId,int skillId)
     {
@@ -31,9 +41,9 @@ class SkillScheduler{
                 switch (skillId)
                 {
                     case 0:
-                        return ShanXiUpdate;
+                        return DefalutUpdate;
                     case 1:
-                        return JumpUpdate;
+                        return DefalutUpdate;
                     default:
                         return null;
                 }
@@ -50,9 +60,9 @@ class SkillScheduler{
                 switch (skillId)
                 {
                     case 0:
-                        return ShanXiEnd;
+                        return DefalutEnd;
                     case 1:
-                        return JumpEnd;
+                        return DefalutEnd;
                     default:
                         return null;
                 }
@@ -69,9 +79,9 @@ class SkillScheduler{
                 switch (skillId)
                 {
                     case 0:
-                        return ShanXiHit;
+                        return DefalutHit;
                     case 1:
-                        return JumpHit;
+                        return DefalutHit;
                     default:
                         return null;
                 }
@@ -82,60 +92,38 @@ class SkillScheduler{
 
     static void ShanXiStart(Hero h)
     {
-        h.move(GameManager.getInstance().distanceStander,0);
+        h.Move(GameManager._distanceStander,0.1f);
     }
 
-    static void ShanXiUpdate(Hero h, float time)
-    {
-
-    }
-
-    static void ShanXiEnd(Hero h)
-    {
-
-    }
-
-    static void ShanXiHit(Hero h)
-    {
-
-    }
 
     static void XuanFengTuiStart(Hero h)
     {
-        h.move(5, 1.3f);
-    }
-
-    static void XuanFengTuiUpdate(Hero h, float time)
-    {
-
-    }
-
-    static void XuanFengTuiEnd(Hero h)
-    {
-
-    }
-
-    static void XuanFengTuiHit(Hero h)
-    {
-
+        h.Move(5, 1.3f);
     }
 
     static void JumpStart(Hero h)
     {
         h.Jump();
+        h._nowState = Hero.state.jumping;
     }
 
-    static void JumpUpdate(Hero h, float time)
+    /// <summary>
+    /// 缺省的Update函数，无内容
+    /// </summary>
+    /// <param name="h"></param>
+    /// <param name="time"></param>
+    /// 作者：胡皓然
+    static void DefalutUpdate(Hero h, float time)
     {
 
     }
 
-    static void JumpEnd(Hero h)
+    static void DefalutEnd(Hero h)
     {
 
     }
 
-    static void JumpHit(Hero h)
+    static void DefalutHit(Hero h)
     {
 
     }
