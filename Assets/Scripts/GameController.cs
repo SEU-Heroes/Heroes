@@ -19,7 +19,8 @@ public class GameController : MonoBehaviour {
     public int roundNumber;
 
 	// Use this for initialization
-	void Awake () {
+	void Awake () 
+    {
         roundNumber = 1;
 	}
 

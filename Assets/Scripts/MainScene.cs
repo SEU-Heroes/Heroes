@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class MainScene : MonoBehaviour {
 
+    static public MainScene instance;
+
     private float totalHP;
 
     public float player1HP;
@@ -16,6 +18,7 @@ public class MainScene : MonoBehaviour {
     
     void Awake()
     {
+        instance = this;
         totalHP = 2048;
     }
 
@@ -28,10 +31,7 @@ public class MainScene : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (Input.GetMouseButtonDown(0))
-            HPReducce(1, 128);
-        if (Input.GetMouseButtonDown(1))
-            HPReducce(2, 512);
+        
     }
 
     public void HPReducce(int id, int num)
