@@ -52,6 +52,17 @@ class Skill
             _useHero = hero;
             SetAnimBool(true);
             _useHero._nowState = Hero.state.BeforeAT;
+
+            //生成技能物体
+            GameObject o = GameManager.GetInstance().Instantiate(GameManager._factory.GetSkillObject(hero._attr._heroId, _skillId), hero.transform.localPosition + _offset, Quaternion.identity);
+            o.transform.Rotate(hero._isFacingLeft ? new Vector3(0, 180, 0) : new Vector3(0, 0, 0));
+
+            //判断是否将技能物体作为角色的子物体
+            if (_isChild)
+            {
+                o.transform.parent = hero.transform;
+            }
+            o.GetComponent<Trigger>().skill = this;
         };
         _start += SkillScheduler.getStartFunction(_heroId,_skillId);
         _update = delegate(Hero hero, float time)

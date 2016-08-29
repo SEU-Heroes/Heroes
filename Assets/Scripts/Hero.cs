@@ -65,7 +65,9 @@ class Hero : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.D))
         {
             List<InputReceiver.dir> list = new List<InputReceiver.dir>();
-            list.Add(InputReceiver.dir.right);
+            list.Add(InputReceiver.dir.up);
+            list.Add(InputReceiver.dir.down);
+            list.Add(InputReceiver.dir.left);
             HandInput(list);
         }
         else if(Input.GetKeyDown(KeyCode.W))
@@ -226,7 +228,7 @@ class Hero : MonoBehaviour {
     /// 技能释放完成，由动画事件调用
     /// </summary>
     /// 作者：胡皓然
-    public void SkillEnd()
+    public void skillEnd()
     {
         _nowSkill._end(this);
     }
@@ -238,6 +240,7 @@ class Hero : MonoBehaviour {
     /// 作者：胡皓然
     public void HPReduce(int num)
     {
+        Debug.Log("111");
         int realReduce = num;
         if (_nowState == state.blocking)
         {
@@ -279,16 +282,6 @@ class Hero : MonoBehaviour {
     /// 作者：胡皓然
     void StartSkill(Skill skill)
     {
-        //生成技能物体
-        //GameObject o = GameManager.GetInstance().Instantiate(GameManager._factory.GetSkillObject(_attr._heroId, skill._skillId), transform.localPosition + skill._offset, Quaternion.identity);
-        GameObject o = (GameObject)Camera.Instantiate(GameManager._factory.GetSkillObject(_attr._heroId, skill._skillId), transform.localPosition + skill._offset, Quaternion.identity);
-        o.transform.Rotate(_isFacingLeft ? new Vector3(0, 180, 0) : new Vector3(0, 0, 0));
-        //判断是否将技能物体作为角色的子物体
-        if (!skill._isChild)
-        {
-            o.transform.parent = transform;
-        }
-        o.GetComponent<Trigger>().skill = skill;
         _nowSkill = skill;
         skill._start(this);
     }

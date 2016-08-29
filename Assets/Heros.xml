@@ -1,7 +1,7 @@
 <Heros>
   <Hero Name="JiXiaoke" heroId="0" Jump="1.8" Move="70" Height="1.6">
     <Skills>
-      <Skill SkillName="Xuanfengtui">
+      <Skill SkillName="XuanFengTui">
         <IsCreated>0</IsCreated>
         <offset>
           <x>0</x>
@@ -14,7 +14,7 @@
         <BeforeAT>10</BeforeAT>
         <firstAfterAT>50</firstAfterAT>
 	<lastAfterAT>50</lastAfterAT>
-        <isChild>0</isChild>
+        <isChild>1</isChild>
 	<tralls>
 		<trall>0</trall>
 		<trall>1</trall>

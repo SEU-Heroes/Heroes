@@ -20,10 +20,8 @@ class SkillScheduler{
                 switch (skillId)
                 {
                     case 0:
-                        Debug.Log("ShanXiStart");
-                        return ShanXiStart;
+                        return XuanFengTuiStart;
                     case 1:
-                        Debug.Log("JumpStart");
                         return JumpStart;
                     default:
                         return null;

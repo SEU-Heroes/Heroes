@@ -45,6 +45,7 @@ class XmlOperate
 
 
                 SkillTree skillTree = new SkillTree();
+                List<InputReceiver.dir> dirList = new List<InputReceiver.dir>();
                 ///获取该英雄的技能属性
                 XmlNodeList secondLevelNodeList = node.ChildNodes;
                 foreach (XmlNode secondNode in secondLevelNodeList)
@@ -55,84 +56,83 @@ class XmlOperate
 
 
                         XmlNodeList skillList = secondNode.ChildNodes;
-                        List<InputReceiver.dir> dirList=new List<InputReceiver.dir>();
                         foreach (XmlNode skillNode in skillList)
                         {
-                            ///获得技能的各个属性
-                            if (skillNode.Name == "IsCreated")
+                            XmlNodeList skillKeyList = skillNode.ChildNodes;
+                            skill._skillName = skillNode.Attributes["SkillName"].InnerText;
+                            foreach (XmlNode skillKeyNode in skillKeyList)
                             {
-                                bool isCreated = (int.Parse(skillNode.Value) == 0) ? false : true;
-                                skill._isCreator = isCreated;
-                            }
-                            if (skillNode.Name == "offset")
-                            {
-                                XmlNodeList offsetNodeList = skillNode.ChildNodes;
-                                int x = 0 , y = 0;
-                                foreach (XmlNode offsetNode in offsetNodeList)
+                          
+                                ///获得技能的各个属性
+                                if (skillKeyNode.Name == "IsCreated")
                                 {
-                                    if (offsetNode.Name == "x")
+                                    bool isCreated = (int.Parse(skillKeyNode.InnerText) == 0) ? false : true;
+                                    skill._isCreator = isCreated;
+                                }
+                                if (skillKeyNode.Name == "offset")
+                                {
+                                    XmlNodeList offsetAttrList = skillKeyNode.ChildNodes;
+                                    foreach (XmlNode offsetAttr in offsetAttrList)
                                     {
-                                        x = int.Parse(offsetNode.Value);
-                                    }
-                                    if (offsetNode.Name == "y")
-                                    {
-                                        y = int.Parse(offsetNode.Value);
+                                        int x = 0, y = 0;
+                                        if (offsetAttr.Name == "x")
+                                            x = int.Parse(offsetAttr.InnerText);
+                                        if (offsetAttr.Name == "y")
+                                            y = int.Parse(offsetAttr.InnerText);
+                                        Vector3 vector = new Vector3(x, y);
                                     }
                                 }
-                                Vector3 vector = new Vector3(x, y, 0);
-                                skill._offset = vector;
-                            }
-                            if (skillNode.Name == "AddRage")
-                            {
-                                int addRage = int.Parse(skillNode.Value);
-                                skill._AddRage = addRage;
-                            }
-                            if (skillNode.Name == "aggressivity")
-                            {
-                                int aggressivity = int.Parse(skillNode.Value);
-                                skill._aggressivity = aggressivity;
-                            }
-                            if (skillNode.Name == "skillId")
-                            {
-                                int skillId = int.Parse(skillNode.Value);
-                                skill._skillId = skillId;
-                            }
-                            if (skillNode.Name == "BeforeAT")
-                            {
-                                int beforeAT = int.Parse(skillNode.Value);
-                                skill._BeforeAT = beforeAT;
-                            }
-                            if (skillNode.Name == "firstAfterAT")
-                            {
-                                int afterAT = int.Parse(skillNode.Value);
-                                skill._AfterATFirst = afterAT;
-                            }
-                            if (skillNode.Name == "lastAfterAT")
-                            {
-                                int afterAT = int.Parse(skillNode.Value);
-                                skill._AfterATLast = afterAT;
-                            }
-
-                            if (skillNode.Name == "isChild")
-                            {
-                                bool isChild = (int.Parse(skillNode.Value) == 0) ? false : true;
-                                skill._isChild = isChild;
-                            }
-                            if (skillNode.Name == "time")
-                            {
-                                int time = int.Parse(skillNode.Value);
-                                skill._Time= time;
-                            }
-                            if (skillNode.Name == "tralls")
-                            {
-                                XmlNodeList trallNodeList = skillNode.ChildNodes;
-                                foreach (XmlNode trallNode in trallNodeList)
+                                if (skillKeyNode.Name == "AddRage")
                                 {
-                                    InputReceiver.dir dir = (InputReceiver.dir)(int.Parse(trallNode.Value));
-                                    dirList.Add(dir);
+                                    int addRage = int.Parse(skillKeyNode.InnerText);
+                                    skill._AddRage = addRage;
+                                }
+                                if (skillKeyNode.Name == "aggressivity")
+                                {
+                                    int aggressivity = int.Parse(skillKeyNode.InnerText);
+                                    skill._aggressivity = aggressivity;
+                                }
+                                if (skillKeyNode.Name == "skillId")
+                                {
+                                    int skillId = int.Parse(skillKeyNode.InnerText);
+                                    skill._skillId = skillId;
+                                }
+                                if (skillKeyNode.Name == "time")
+                                {
+                                    int time = int.Parse(skillKeyNode.InnerText);
+                                    skill._Time = time;
+                                }
+                                if (skillKeyNode.Name == "BeforeAT")
+                                {
+                                    int beforeAT = int.Parse(skillKeyNode.InnerText);
+                                    skill._BeforeAT = beforeAT;
+                                }
+                                if (skillKeyNode.Name == "firstAfterAT")
+                                {
+                                    int firstAfterAT = int.Parse(skillKeyNode.InnerText);
+                                    skill._AfterATFirst = firstAfterAT;
+                                }
+                                if (skillKeyNode.Name == "lastAfterAT")
+                                {
+                                    int lastAfterAT = int.Parse(skillKeyNode.InnerText);
+                                    skill._AfterATLast = lastAfterAT;
+                                }
+                                if (skillKeyNode.Name == "isChild")
+                                {
+                                    bool isChild = (int.Parse(skillKeyNode.InnerText) == 0) ? false : true;
+                                    skill._isChild = isChild;
+                                }
+                                if (skillKeyNode.Name == "tralls")
+                                {
+                                    XmlNodeList trallsList = skillKeyNode.ChildNodes;
+                                    foreach (XmlNode trallNode in trallsList)
+                                    {
+                                        dirList.Add((InputReceiver.dir)(int.Parse(trallNode.InnerText)));
+                                    }
                                 }
                             }
                         }
+                        skill.SetFunc();
                         ///把技能添加到技能树
                         skillTree.Add(dirList, skill);
                     }
@@ -144,4 +144,5 @@ class XmlOperate
         }
         return null;
     }
+
 }

@@ -57,10 +57,6 @@ class Player{
     /// 作者：胡皓然
     public void Instantiate(Vector3 position,Quaternion q)
     {
-        if (GameManager._factory == null)
-        {
-            Debug.Log("111");
-        }
         _nowHero = GameManager.GetInstance().Instantiate(GameManager._factory.GetHero(_heroes[_nowHeroNum]._heroId), position, q).GetComponent<Hero>();
         Camera.main.GetComponent<FollowPlayers>().setPlayer(_nowHero);
         _nowHero._attr = _heroes[_nowHeroNum];

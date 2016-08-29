@@ -111,10 +111,26 @@ class GameManager:MonoBehaviour{
         }
     }
 
+    /// <summary>
+    /// 在切换到战斗场景时调用
+    /// </summary>
+    /// <param name="names">战斗的角色名列表，Player1在前，Player2在后，人机对战只需要玩家的角色名</param>
+    /// 作者：胡皓然
     public void StartFightScene(List<string> names)
     {
         setPlayer(names[0], names[1], names[2]);
         ChangeScene("BattleScene-boat");
+    }
+
+    /// <summary>
+    /// 实例化当前已设置好的玩家角色
+    /// </summary>
+    /// 作者：胡皓然
+    public void InstantiatePlayers()
+    {
+        _player1.Instantiate(new Vector3(-5, -2, 0), Quaternion.identity);
+        _player2.Instantiate(new Vector3(5, -2, 0), Quaternion.identity);
+        _player2.GetHero()._isFacingLeft = true;
     }
 
     /// <summary>
@@ -123,6 +139,7 @@ class GameManager:MonoBehaviour{
     /// <param name="heroName1"></param>
     /// <param name="heroName2"></param>
     /// <param name="heroName3"></param>
+    /// 作者：胡皓然
     void setPlayer(string heroName1,string heroName2,string heroName3)
     {
         _player1 = new Player();
@@ -135,15 +152,11 @@ class GameManager:MonoBehaviour{
     /// 改变当前场景
     /// </summary>
     /// <param name="sceneName">要转到的场景名字</param>
+    /// 作者：胡皓然
     void ChangeScene(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }
 
-    public void InstantiatePlayers()
-    {
-        _player1.Instantiate(new Vector3(-5, -2, 0), Quaternion.identity);
-        _player2.Instantiate(new Vector3(5, -2, 0), Quaternion.identity);
-        _player2.GetHero()._isFacingLeft = true;
-    }
+    
 }
