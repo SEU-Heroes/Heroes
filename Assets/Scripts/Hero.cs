@@ -91,7 +91,7 @@ class Hero : MonoBehaviour {
             Move();
         }
         //放技能时每一帧改变角色状态
-        if (_nowState == state.acting)
+        if (_nowState == state.acting || _nowState == state.BeforeAT || _nowState == state.LastHalfAfterAT || _nowState == state.FirstHalfAfterAT)
         {
             _actTime += Time.deltaTime;
             _nowSkill._update(this, _actTime);
@@ -118,7 +118,6 @@ class Hero : MonoBehaviour {
             if (skill != null)
             {
                 StartSkill(skill);
-                _actTime = 0;
             }
         }
     }
@@ -244,7 +243,7 @@ class Hero : MonoBehaviour {
         int realReduce = num;
         if (_nowState == state.blocking)
         {
-            realReduce = num - HeroAttr._defenseForce;
+            realReduce = num - GameManager._defenseForce;
         }
         _attr._HP -= realReduce;
         GameManager.GetInstance().HPReduce(this, num);
@@ -255,14 +254,14 @@ class Hero : MonoBehaviour {
     /// </summary>
     /// <param name="addRage"></param>
     /// 作者：胡皓然
-    void RageAdd(int addRage)
+    public void RageAdd(int addRage)
     {
         int count;
         _attr._Rage += addRage;
-        if (_attr._Rage > HeroAttr._maxRage)
+        if (_attr._Rage > GameManager._maxRage)
         {
-            count = _attr._Rage - HeroAttr._maxRage;
-            _attr._Rage = HeroAttr._maxRage;
+            count = _attr._Rage - GameManager._maxRage;
+            _attr._Rage = GameManager._maxRage;
             if (_attr._fullRage >= 3)
             {
                 _attr._fullRage = 3;
@@ -272,7 +271,8 @@ class Hero : MonoBehaviour {
                 _attr._fullRage++;
                 _attr._Rage = count;
             }
-        }       
+        }
+        MainScene._instance.SPAdd(this, addRage);
     }
 
     /// <summary>
@@ -284,6 +284,7 @@ class Hero : MonoBehaviour {
     {
         _nowSkill = skill;
         skill._start(this);
+        _actTime = 0;
     }
 
     /// <summary>

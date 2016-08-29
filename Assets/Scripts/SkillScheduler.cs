@@ -96,7 +96,7 @@ class SkillScheduler{
 
     static void XuanFengTuiStart(Hero h)
     {
-        h.Move(5, 1.3f);
+        h.Move(4, 1.3f);  
     }
 
     static void JumpStart(Hero h)

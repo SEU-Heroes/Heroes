@@ -19,10 +19,10 @@ class Skill
     public int _skillId;//技能ID
     public int _heroId;//技能所属角色ID
     public String _skillName;//技能名字
-    public int _BeforeAT;//前摇时间
-    public int _AfterATFirst;//后摇前半段时间
-    public int _AfterATLast;//后摇后半段时间
-    public int _Time;//技能发动的时间
+    public float _BeforeAT;//前摇时间
+    public float _AfterATFirst;//后摇前半段时间
+    public float _AfterATLast;//后摇后半段时间
+    public float _Time;//技能发动的时间
     public bool _isChild;//生成的技能物体是否是人物的子物体
     
     public Hero _useHero;//使用技能的角色
@@ -67,25 +67,33 @@ class Skill
         _start += SkillScheduler.getStartFunction(_heroId,_skillId);
         _update = delegate(Hero hero, float time)
         {
-            if (time > _AfterATFirst)
+            if (time > _Time + _BeforeAT + _AfterATFirst + _AfterATLast)
+            {
+                hero._nowState = Hero.state.still;
+            }
+            else if (time > _AfterATFirst+_Time+_BeforeAT)
             {
                 hero._nowState = Hero.state.LastHalfAfterAT;
             }
-            else if (time > _BeforeAT)
+            else if (time > _BeforeAT +_Time)
             {
                 hero._nowState = Hero.state.FirstHalfAfterAT;
+            }
+            else if (time > _BeforeAT)
+            {
+                hero._nowState = Hero.state.acting;
             }
         };
         _update += SkillScheduler.getUpdateFunction(_heroId,_skillId);
         _end = SkillScheduler.getEndFunction(_heroId,_skillId);
         _end += delegate(Hero hero)
         {
-            _useHero._nowState = Hero.state.still;
             SetAnimBool(false);
         };
         _hit = SkillScheduler.getHitFunction(_heroId,_skillId);
         _hit += delegate(Hero hero)
         {
+            _useHero.RageAdd(_AddRage);
             hero.HPReduce(_aggressivity);
         };
     }

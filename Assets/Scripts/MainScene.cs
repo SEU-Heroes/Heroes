@@ -17,7 +17,7 @@ using UnityEngine.UI;
   * 版本 V1.02  修改时间2016.8.27 修改内容-新增SP条满时闪烁特效
   */
 
-public class MainScene : MonoBehaviour {
+class MainScene : MonoBehaviour {
 
     static public MainScene _instance;
     
@@ -55,8 +55,8 @@ public class MainScene : MonoBehaviour {
     /// 作者：庄亦舟
     void Awake()
     {
-        totalHP = 2048;
-        totalSP = 2048;
+        totalHP = GameManager._maxHP;
+        totalSP = GameManager._maxRage;
         tempPara = 0;
         _instance = this;
     }
@@ -84,11 +84,6 @@ public class MainScene : MonoBehaviour {
     /// 作者：庄亦舟
 	void Update ()
     {
-        if (Input.GetMouseButtonDown(0))  
-            HPReducce(1, 128);
-        if (Input.GetMouseButtonDown(1))
-            HPReducce(2, 512);
-
         // 每帧更新变量tempPara，来控制SP条满时的动画提示
         tempPara = tempPara > 60 ? 0 : tempPara + 1;
         if (player1SP == totalSP)
@@ -183,9 +178,23 @@ public class MainScene : MonoBehaviour {
     /// <param name="id"></param>
     /// <param name="num"></param>
     /// 作者：庄亦舟
-    void SPAdd(int id, int num)
+    public void SPAdd(int id, int num)
     {
         if (id == 1)
+        {
+            player1SP += num;
+            player1SPSlider.value += num;
+        }
+        else
+        {
+            player2SP += num;
+            player2SPSlider.value += num;
+        }
+    }
+
+    public void SPAdd(Hero hero, int num)
+    {
+        if (hero == GameManager.GetInstance().GetMainPlayer().GetHero())
         {
             player1SP += num;
             player1SPSlider.value += num;

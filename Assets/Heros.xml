@@ -10,10 +10,10 @@
         <AddRage>0</AddRage>
         <aggressivity>50</aggressivity>
         <skillId>0</skillId>
-	<time>10</time>
-        <BeforeAT>10</BeforeAT>
-        <firstAfterAT>50</firstAfterAT>
-	<lastAfterAT>50</lastAfterAT>
+	<time>1.3</time>
+        <BeforeAT>0</BeforeAT>
+        <firstAfterAT>0.5</firstAfterAT>
+	<lastAfterAT>0.5</lastAfterAT>
         <isChild>1</isChild>
 	<tralls>
 		<trall>0</trall>

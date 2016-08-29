@@ -99,22 +99,22 @@ class XmlOperate
                                 }
                                 if (skillKeyNode.Name == "time")
                                 {
-                                    int time = int.Parse(skillKeyNode.InnerText);
+                                    float time = float.Parse(skillKeyNode.InnerText);
                                     skill._Time = time;
                                 }
                                 if (skillKeyNode.Name == "BeforeAT")
                                 {
-                                    int beforeAT = int.Parse(skillKeyNode.InnerText);
+                                    float beforeAT = float.Parse(skillKeyNode.InnerText);
                                     skill._BeforeAT = beforeAT;
                                 }
                                 if (skillKeyNode.Name == "firstAfterAT")
                                 {
-                                    int firstAfterAT = int.Parse(skillKeyNode.InnerText);
+                                    float firstAfterAT = float.Parse(skillKeyNode.InnerText);
                                     skill._AfterATFirst = firstAfterAT;
                                 }
                                 if (skillKeyNode.Name == "lastAfterAT")
                                 {
-                                    int lastAfterAT = int.Parse(skillKeyNode.InnerText);
+                                    float lastAfterAT = float.Parse(skillKeyNode.InnerText);
                                     skill._AfterATLast = lastAfterAT;
                                 }
                                 if (skillKeyNode.Name == "isChild")

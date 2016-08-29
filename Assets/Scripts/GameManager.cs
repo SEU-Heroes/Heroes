@@ -18,6 +18,9 @@ class GameManager:MonoBehaviour{
 
     //游戏内统一数据
     static public int _distanceStander;//距离标准值
+    static public int _maxRage = 1000;//最大怒气值
+    static public int _defenseForce = 32; //防御力
+    static public int _maxHP = 1024;//最大生命值
 
     //游戏模式管理
     public enum mode {none, player, computer, story,tutorial,skillWatch};//游戏模式枚举

@@ -11,12 +11,6 @@ using System.Collections;
  */
 
 class HeroAttr{
-
-    //角色通用属性
-    static public int _maxRage = 1000;//最大怒气值
-    static public int _defenseForce = 32; //防御力
-    static public int _maxHP = 1024;//最大生命值
-
     //角色固定信息
     public string _name;//角色名字
     public int _heroId;//角色ID
