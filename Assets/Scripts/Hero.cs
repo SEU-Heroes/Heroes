@@ -243,6 +243,24 @@ class Hero : MonoBehaviour {
     }
 
     /// <summary>
+    /// 设置角色眩晕（硬直）
+    /// </summary>
+    /// <param name="dizzyTimeInMs">硬直时间，以毫秒（ms）计</param>
+    public void StartDizzy(float dizzyTimeInMs)
+    {
+        if (_nowState == state.acting)
+        {
+            Debug.Log(_nowSkill._instantiation);
+            Destroy(_nowSkill._instantiation);
+            _nowSkill.SetAnimBool(false);
+        }
+        _nowState = state.dizzy;
+        _anim.SetBool("Dizzy", true);
+        Invoke("CancelDizzyState", dizzyTimeInMs / 1000f);
+    }
+
+
+    /// <summary>
     /// 技能释放完成，由动画事件调用
     /// </summary>
     /// 作者：胡皓然
@@ -322,6 +340,13 @@ class Hero : MonoBehaviour {
     Skill CheckSkill(List<InputReceiver.dir> input)
     {
         return _attr._skills.CheckSkill(input);
+    }
+
+    // 将角色的状态从眩晕（硬直）中恢复
+    void CancelDizzyState()
+    {
+        _anim.SetBool("Dizzy", false);
+        _nowState = state.still;
     }
 
     /// <summary>

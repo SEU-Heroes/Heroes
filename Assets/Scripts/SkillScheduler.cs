@@ -48,6 +48,8 @@ class SkillScheduler{
                         return DefalutUpdate;
                     case 2:
                         return DefalutUpdate;
+                    case 3:
+                        return DefalutUpdate;
                     default:
                         return null;
                 }
@@ -68,6 +70,8 @@ class SkillScheduler{
                     case 1:
                         return DefalutEnd;
                     case 2:
+                        return DefalutEnd;
+                    case 3:
                         return DefalutEnd;
                     default:
                         return null;
@@ -90,6 +94,8 @@ class SkillScheduler{
                         return DefalutHit;
                     case 2:
                         return DefalutHit;
+                    case 3:
+                        return XuanFengTuiHit;
                     default:
                         return null;
                 }
@@ -119,9 +125,9 @@ class SkillScheduler{
         h.Jump(new Vector2((h._isFacingLeft ? 1 : -1) * h._backJumpForce*1.5f, h._backJumpForce));
     }
 
-    static void LieYanTuXi(Hero h)
+    static void XuanFengTuiHit(Hero h)
     {
-        
+        h.StartDizzy(100);
     }
 
     /// <summary>
