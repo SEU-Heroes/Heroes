@@ -1,25 +1,84 @@
 <Heros>
   <Hero Name="JiXiaoke" heroId="0" Jump="1.8" Move="70" Height="1.6">
     <Skills>
-      <Skill SkillName="XuanFengTui">
+      <Skill SkillName="Jump">
         <IsCreated>0</IsCreated>
         <offset>
           <x>0</x>
           <y>0</y>
         </offset>
         <AddRage>0</AddRage>
-        <aggressivity>50</aggressivity>
+        <aggressivity>0</aggressivity>
         <skillId>0</skillId>
-	<time>1.3</time>
+        <time>0</time>
+        <BeforeAT>0</BeforeAT>
+        <firstAfterAT>0</firstAfterAT>
+        <lastAfterAT>0</lastAfterAT>
+        <existTime>0</existTime>
+        <isChild>0</isChild>
+        <tralls>
+          <trall>0</trall>
+        </tralls>
+      </Skill>
+      <Skill SkillName="BackJump">
+        <IsCreated>0</IsCreated>
+        <offset>
+          <x>0</x>
+          <y>0</y>
+        </offset>
+        <AddRage>0</AddRage>
+        <aggressivity>0</aggressivity>
+        <skillId>1</skillId>
+        <time>0</time>
+        <BeforeAT>0</BeforeAT>
+        <firstAfterAT>0</firstAfterAT>
+        <lastAfterAT>0</lastAfterAT>
+        <existTime>0</existTime>
+        <isChild>0</isChild>
+        <tralls>
+          <trall>1</trall>
+        </tralls>
+      </Skill>
+      <Skill SkillName="LieYanTuXi">
+        <IsCreated>0</IsCreated>
+        <offset>
+          <x>0</x>
+          <y>0</y>
+        </offset>
+        <AddRage>120</AddRage>
+        <aggressivity>96</aggressivity>
+        <skillId>2</skillId>
+        <time>0.01</time>
+        <BeforeAT>0.4</BeforeAT>
+        <firstAfterAT>0.15</firstAfterAT>
+        <lastAfterAT>0.15</lastAfterAT>
+        <existTime>0.1</existTime>
+        <isChild>0</isChild>
+        <tralls>
+          <trall>0</trall>
+          <trall>3</trall>
+        </tralls>
+      </Skill>
+      <Skill SkillName="XuanFengTui">
+        <IsCreated>0</IsCreated>
+        <offset>
+          <x>0</x>
+          <y>0</y>
+        </offset>
+        <AddRage>50</AddRage>
+        <aggressivity>50</aggressivity>
+        <skillId>3</skillId>
+	      <time>1.3</time>
         <BeforeAT>0</BeforeAT>
         <firstAfterAT>0.5</firstAfterAT>
-	<lastAfterAT>0.5</lastAfterAT>
+	      <lastAfterAT>0.5</lastAfterAT>
+        <existTime>1.3</existTime>
         <isChild>1</isChild>
-	<tralls>
-		<trall>0</trall>
-		<trall>1</trall>
-		<trall>2</trall>
-	</tralls>
+	      <tralls>
+		      <trall>0</trall>
+		      <trall>1</trall>
+		      <trall>2</trall>
+	      </tralls>
       </Skill>
     </Skills>
   </Hero>

@@ -12,6 +12,10 @@ using System.Collections.Generic;
  */
 
 class Player{
+    public int _id;//角色在场景中的id，有1和2
+
+    public int _maxHP;//当前设置的最大生命值
+
     const int _heroNum = 3;//角色数量
 
     HeroAttr[] _heroes;//角色属性列表
@@ -20,8 +24,9 @@ class Player{
 
     int _nowHeroNum = 0;//目前是第几个角色
 
-    public Player()
+    public Player(int id)
     {
+        _id = id;
         _heroes = new HeroAttr[_heroNum];
     }
 
@@ -58,7 +63,7 @@ class Player{
     public void Instantiate(Vector3 position,Quaternion q)
     {
         _nowHero = GameManager.GetInstance().Instantiate(GameManager._factory.GetHero(_heroes[_nowHeroNum]._heroId), position, q).GetComponent<Hero>();
-        Camera.main.GetComponent<FollowPlayers>().setPlayer(_nowHero);
+        Camera.main.GetComponent<FollowPlayers>().setPlayer(_nowHero,_id);
         _nowHero._attr = _heroes[_nowHeroNum];
     }
 
@@ -78,5 +83,28 @@ class Player{
     public void TouchStay(List<InputReceiver.dir> input)
     {
         _nowHero.TouchStay(input);
+    }
+
+    /// <summary>
+    /// 该玩家的当前角色死亡
+    /// </summary>
+    /// <param name="position">下一个角色要生成的位置</param>
+    public void HeroDie(Vector3 position)
+    {
+        if (_nowHeroNum != 2)
+        {
+            _nowHero.HeroDie();
+            _nowHeroNum++;
+            Instantiate(position,Quaternion.identity);
+        }
+        else
+        {
+            //输赢动画
+        }
+    }
+
+    public void setHP(int num)
+    {
+        _maxHP = num * GameManager._maxHP;
     }
 }

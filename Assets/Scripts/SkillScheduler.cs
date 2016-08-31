@@ -20,9 +20,13 @@ class SkillScheduler{
                 switch (skillId)
                 {
                     case 0:
-                        return XuanFengTuiStart;
-                    case 1:
                         return JumpStart;
+                    case 1:
+                        return BackJumpStart;
+                    case 2:
+                        return LieYanTuXiStart;
+                    case 3:
+                        return XuanFengTuiStart;
                     default:
                         return null;
                 }
@@ -41,6 +45,8 @@ class SkillScheduler{
                     case 0:
                         return DefalutUpdate;
                     case 1:
+                        return DefalutUpdate;
+                    case 2:
                         return DefalutUpdate;
                     default:
                         return null;
@@ -61,6 +67,8 @@ class SkillScheduler{
                         return DefalutEnd;
                     case 1:
                         return DefalutEnd;
+                    case 2:
+                        return DefalutEnd;
                     default:
                         return null;
                 }
@@ -80,6 +88,8 @@ class SkillScheduler{
                         return DefalutHit;
                     case 1:
                         return DefalutHit;
+                    case 2:
+                        return DefalutHit;
                     default:
                         return null;
                 }
@@ -88,21 +98,30 @@ class SkillScheduler{
         }
     }
 
-    static void ShanXiStart(Hero h)
+    static void LieYanTuXiStart(Hero h)
     {
-        h.Move(GameManager._distanceStander,0.1f);
+        h.Move(5,0.1f);
     }
 
 
     static void XuanFengTuiStart(Hero h)
     {
-        h.Move(4, 1.3f);  
+        h.Move(3, 1.3f);  
     }
 
     static void JumpStart(Hero h)
     {
-        h.Jump();
-        h._nowState = Hero.state.jumping;
+        h.Jump(new Vector2(0,h._jumpForce));
+    }
+
+    static void BackJumpStart(Hero h)
+    {
+        h.Jump(new Vector2((h._isFacingLeft ? 1 : -1) * h._backJumpForce*1.5f, h._backJumpForce));
+    }
+
+    static void LieYanTuXi(Hero h)
+    {
+        
     }
 
     /// <summary>

@@ -134,17 +134,17 @@ class MainScene : MonoBehaviour {
         if(player1Lose && player2Lose)
         {
             // 平局操作
-            Debug.Log("Draw!");
+            GameManager.GetInstance().HeroDie(1);
+            GameManager.GetInstance().HeroDie(2);
         }
         else if(player1Lose)
         {
             // 玩家2获胜
-            Debug.Log("Player2 Wins!");
+            GameManager.GetInstance().HeroDie(1);
         }
         else if(player2Lose)
         {
-            // 玩家1获胜
-            Debug.Log("Player1 Wins!");
+            GameManager.GetInstance().HeroDie(2);
         }
 
     }

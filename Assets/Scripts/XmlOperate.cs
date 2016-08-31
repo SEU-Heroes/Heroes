@@ -45,7 +45,7 @@ class XmlOperate
 
 
                 SkillTree skillTree = new SkillTree();
-                List<InputReceiver.dir> dirList = new List<InputReceiver.dir>();
+                List<InputReceiver.dir> dirList;
                 ///获取该英雄的技能属性
                 XmlNodeList secondLevelNodeList = node.ChildNodes;
                 foreach (XmlNode secondNode in secondLevelNodeList)
@@ -58,8 +58,11 @@ class XmlOperate
                         XmlNodeList skillList = secondNode.ChildNodes;
                         foreach (XmlNode skillNode in skillList)
                         {
+                            skill = new Skill();
+                            dirList = new List<InputReceiver.dir>();
                             XmlNodeList skillKeyList = skillNode.ChildNodes;
                             skill._skillName = skillNode.Attributes["SkillName"].InnerText;
+                            
                             foreach (XmlNode skillKeyNode in skillKeyList)
                             {
                           
@@ -117,6 +120,11 @@ class XmlOperate
                                     float lastAfterAT = float.Parse(skillKeyNode.InnerText);
                                     skill._AfterATLast = lastAfterAT;
                                 }
+                                if (skillKeyNode.Name == "existTime")
+                                {
+                                    float existTime = float.Parse(skillKeyNode.InnerText);
+                                    skill._existTime = existTime;
+                                }
                                 if (skillKeyNode.Name == "isChild")
                                 {
                                     bool isChild = (int.Parse(skillKeyNode.InnerText) == 0) ? false : true;
@@ -131,10 +139,11 @@ class XmlOperate
                                     }
                                 }
                             }
+                            skill.SetFunc();
+                            ///把技能添加到技能树
+                            skillTree.Add(dirList, skill);
                         }
-                        skill.SetFunc();
-                        ///把技能添加到技能树
-                        skillTree.Add(dirList, skill);
+                       
                     }
                 }
                 ///构造英雄

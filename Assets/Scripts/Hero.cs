@@ -30,6 +30,7 @@ class Hero : MonoBehaviour {
     //角色固定属性
     public float _jumpForce;//跳跃力
     public float _moveSpeed;//角色移动速度
+    public float _backJumpForce;//后跳力
 
     //算法所需变量（不用管）
     Vector3 _aimPosition;//本次移动的目的地
@@ -72,9 +73,19 @@ class Hero : MonoBehaviour {
         }
         else if(Input.GetKeyDown(KeyCode.W))
         {
-            List<InputReceiver.dir> list = new List<InputReceiver.dir>();
-            list.Add(InputReceiver.dir.up);
-            HandInput(list);
+            HandSkill(_attr._skills.FindSkillById(0));
+        }
+        else if (Input.GetKeyDown(KeyCode.S))
+        {
+            HandSkill(_attr._skills.FindSkillByName("BackJump"));
+        }
+        else if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (_attr._skills.FindSkillByName("LieYanTuXi") == null)
+            {
+                Debug.Log("111");
+            }
+            HandSkill(_attr._skills.FindSkillByName("LieYanTuXi"));
         }
     }
 
@@ -105,6 +116,19 @@ class Hero : MonoBehaviour {
     /// 作者：胡皓然
     public void HandInput(List<InputReceiver.dir> input)
     {
+        Skill skill = CheckSkill(input);
+        if (skill != null)
+        {
+            HandSkill(skill);
+        }
+    }
+
+    /// <summary>
+    /// 尝试释放一个技能
+    /// </summary>
+    /// <param name="skill"></param>
+    public void HandSkill(Skill skill)
+    {
         //判断是否能释放技能
         int skillable = IsSkillable();
         if (skillable == 0)
@@ -113,12 +137,7 @@ class Hero : MonoBehaviour {
         }
         else
         {
-            //判断该轨迹是否有相应技能
-            Skill skill = CheckSkill(input);
-            if (skill != null)
-            {
-                StartSkill(skill);
-            }
+            StartSkill(skill);
         }
     }
 
@@ -204,11 +223,11 @@ class Hero : MonoBehaviour {
     }
 
     //跳跃
-    public void Jump()
+    public void Jump(Vector2 jumpDir)
     {
         if (IsJumpable())
         {
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, _jumpForce));
+            GetComponent<Rigidbody2D>().AddForce(jumpDir);
             _nowState = state.jumping;
         }
     }
@@ -239,7 +258,6 @@ class Hero : MonoBehaviour {
     /// 作者：胡皓然
     public void HPReduce(int num)
     {
-        Debug.Log("111");
         int realReduce = num;
         if (_nowState == state.blocking)
         {
@@ -276,6 +294,14 @@ class Hero : MonoBehaviour {
     }
 
     /// <summary>
+    /// 角色死掉，删除场景上的该角色
+    /// </summary>
+    public void HeroDie()
+    {
+        Destroy(this.gameObject);
+    }
+
+    /// <summary>
     /// 开始释放技能
     /// </summary>
     /// <param name="skill">需要释放的技能</param>
@@ -295,7 +321,7 @@ class Hero : MonoBehaviour {
     /// 作者：胡皓然
     Skill CheckSkill(List<InputReceiver.dir> input)
     {
-        return _attr._skills.checkSkill(input);
+        return _attr._skills.CheckSkill(input);
     }
 
     /// <summary>

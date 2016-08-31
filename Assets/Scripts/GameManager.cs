@@ -22,9 +22,18 @@ class GameManager:MonoBehaviour{
     static public int _defenseForce = 32; //防御力
     static public int _maxHP = 1024;//最大生命值
 
-    //游戏模式管理
-    public enum mode {none, player, computer, story,tutorial,skillWatch};//游戏模式枚举
+    //游戏设置数据
+    public enum map { boat, seu };//游戏地图枚举
+    public enum difficulty {none, easy, middle, difficult };//游戏难度枚举
+    public enum mode { none, player, computer, story, tutorial, skillWatch };//游戏模式枚举
+    public int _volume = -1;//音量大小，-1为无声音
+    public bool _shock;//是否震动
     mode _nowMode = mode.computer;//当前的游戏模式
+    public int _roundNum;//回合数
+    public int _roundTime;//回合时间
+    public difficulty _diffi;//难度选择
+    public map _nowMap = map.boat;//地图选择
+    public int _HPNum;//血量
 
     //单例
     static GameManager _instance;
@@ -83,11 +92,17 @@ class GameManager:MonoBehaviour{
     public void SetMainPlayer(Player p)
     {
         _player1 = p;
+        _player1.setHP(_HPNum);
     }
 
     public void SetOtherPlayer(Player p)
     {
         _player2 = p;
+        _player2.setHP(_HPNum);
+        if (_nowMode == mode.computer)
+        {
+            //设置角色AI
+        }
     }
 
     //设置模式
@@ -136,6 +151,19 @@ class GameManager:MonoBehaviour{
         _player2.GetHero()._isFacingLeft = true;
     }
 
+    public void HeroDie(int id)
+    {
+        if (id == 1)
+        {
+            _player1.HeroDie(new Vector3(-5, -2, 0));
+        }
+        else
+        {
+            _player2.HeroDie(new Vector3(5, 2, 0));
+            _player2.GetHero()._isFacingLeft = true;
+        }
+    }
+
     /// <summary>
     /// 设置人机的角色，玩家选择三个，电脑与玩家相同
     /// </summary>
@@ -145,9 +173,9 @@ class GameManager:MonoBehaviour{
     /// 作者：胡皓然
     void setPlayer(string heroName1,string heroName2,string heroName3)
     {
-        _player1 = new Player();
+        _player1 = new Player(1);
         _player1.SetHeroAttr(XmlOperate.GetHeroInformation(heroName1),XmlOperate.GetHeroInformation(heroName2),XmlOperate.GetHeroInformation(heroName3));
-        _player2 = new Player();
+        _player2 = new Player(2);
         _player2.SetHeroAttr(XmlOperate.GetHeroInformation(heroName1), XmlOperate.GetHeroInformation(heroName2), XmlOperate.GetHeroInformation(heroName3));
     }
 

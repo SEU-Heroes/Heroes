@@ -23,7 +23,6 @@ public class InputArea : MonoBehaviour
     void Start() 
     {
         Input.multiTouchEnabled = true;//开启多点触碰
-        
     }
 
     // Update is called once per frame

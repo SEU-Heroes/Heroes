@@ -32,9 +32,9 @@ class SkillTree
         SkillNode theRoot = root;
         for (int i = 0; i < input.Count; i++)
         {
-            theRoot = theRoot.addChild(new SkillNode(input[i]));
+            theRoot = theRoot.AddChild(new SkillNode(input[i]));
         }
-        theRoot.addChild(s);
+        theRoot.AddChild(s);
     }
 
     /// <summary>
@@ -43,17 +43,27 @@ class SkillTree
     /// <param name="input">技能的序列</param>
     /// <returns>找到了就返回该技能，否则返回null</returns>
     /// 作者：胡皓然
-    public Skill checkSkill(List<InputReceiver.dir> input)
+    public Skill CheckSkill(List<InputReceiver.dir> input)
     {
         SkillNode theLeaf = root;
         for (int i = 0; i < input.Count; i++)
         {
-            theLeaf = theLeaf.getChild(input[i]);
+            theLeaf = theLeaf.GetChild(input[i]);
             if (theLeaf == null)
             {
                 return null;
             }
         }
-        return theLeaf.getSkill();
+        return theLeaf.GetSkill();
+    }
+
+    public Skill FindSkillById(int id)
+    {
+        return root.FindSkillById(id);
+    }
+
+    public Skill FindSkillByName(string name)
+    {
+        return root.FindSkillByName(name);
     }
 }

@@ -29,7 +29,7 @@ class SkillNode
         skill = null;
     }
 
-    public SkillNode addChild(SkillNode n)
+    public SkillNode AddChild(SkillNode n)
     {
         int count = checkChild(n.theDir);
         if (count == -1)
@@ -40,7 +40,7 @@ class SkillNode
         return child[count];
     }
 
-    public bool addChild(Skill s)
+    public bool AddChild(Skill s)
     {
         if (skill == null)
         {
@@ -59,7 +59,7 @@ class SkillNode
     /// <param name="d">子节点的轨迹方向</param>
     /// <returns>有相应子节点就返回相应子节点，没有就返回null</returns>
     /// 作者：胡皓然
-    public SkillNode getChild(InputReceiver.dir d)
+    public SkillNode GetChild(InputReceiver.dir d)
     {
         if (checkChild(d) == -1)
         {
@@ -77,9 +77,59 @@ class SkillNode
     /// </summary>
     /// <returns>返回子技能，没有就返回null</returns>
     /// 作者：胡皓然
-    public Skill getSkill()
+    public Skill GetSkill()
     {
         return skill;
+    }
+
+    /// <summary>
+    /// 通过技能ID查找技能
+    /// </summary>
+    /// <param name="Id"></param>
+    /// <returns>如果该结点及其子孙节点有相应技能就返回该技能，没有就返回null</returns>
+    public Skill FindSkillById(int Id)
+    {
+        if (skill != null && skill._skillId == Id)
+        {
+            return skill;
+        }
+        else
+        {
+            for (int i = 0; i < child.Count; i++)
+            {
+                Skill temp = child[i].FindSkillById(Id);
+                if (temp != null)
+                {
+                    return temp;
+                }
+            }
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// 通过技能名字查找技能
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>如果该结点及其子孙节点有相应技能就返回该技能，没有就返回null</returns>
+    public Skill FindSkillByName(string name)
+    {
+        if (skill != null&&skill._skillName == name)
+        {
+            return skill;
+        }
+        else
+        {
+            for (int i = 0; i < child.Count; i++)
+            {
+                Skill temp = child[i].FindSkillByName(name);
+                if (temp != null)
+                {
+                    return temp; 
+                }
+            }
+            return null;
+        }
     }
 
     /// <summary>

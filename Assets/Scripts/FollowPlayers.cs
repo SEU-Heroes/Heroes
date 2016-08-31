@@ -66,13 +66,13 @@ class FollowPlayers : MonoBehaviour {
             transform.position = new Vector3(8.5f - size * 16 / 9, transform.position.y, -10);
     }
 
-    public void setPlayer(Hero player)
+    public void setPlayer(Hero player,int id)
     {
-        if (player1 != null)
+        if (id == 1)
         {
-            player2 = player.gameObject.transform;
-        }else{
             player1 = player.gameObject.transform;
+        }else{
+            player2 = player.gameObject.transform;
         }
     }
 }

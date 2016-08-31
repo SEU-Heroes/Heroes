@@ -24,6 +24,7 @@ class Skill
     public float _AfterATLast;//后摇后半段时间
     public float _Time;//技能发动的时间
     public bool _isChild;//生成的技能物体是否是人物的子物体
+    public float _existTime;//生成物体的存在时间
     
     public Hero _useHero;//使用技能的角色
     public Hero _hitHero;//被击中的角色
@@ -41,6 +42,8 @@ class Skill
     public End _end;
     public Hit _hit;
 
+    public GameObject _instantiation;
+
     /// <summary>
     /// 设置技能的四个function
     /// </summary>
@@ -52,17 +55,6 @@ class Skill
             _useHero = hero;
             SetAnimBool(true);
             _useHero._nowState = Hero.state.BeforeAT;
-
-            //生成技能物体
-            GameObject o = GameManager.GetInstance().Instantiate(GameManager._factory.GetSkillObject(hero._attr._heroId, _skillId), hero.transform.localPosition + _offset, Quaternion.identity);
-            o.transform.Rotate(hero._isFacingLeft ? new Vector3(0, 180, 0) : new Vector3(0, 0, 0));
-
-            //判断是否将技能物体作为角色的子物体
-            if (_isChild)
-            {
-                o.transform.parent = hero.transform;
-            }
-            o.GetComponent<Trigger>().skill = this;
         };
         _start += SkillScheduler.getStartFunction(_heroId,_skillId);
         _update = delegate(Hero hero, float time)
@@ -81,6 +73,21 @@ class Skill
             }
             else if (time > _BeforeAT)
             {
+                if (_instantiation == null)
+                {
+                    //生成技能物体
+                    _instantiation = GameManager.GetInstance().Instantiate(GameManager._factory.GetSkillObject(hero._attr._heroId, _skillId), hero.transform.localPosition + _offset, Quaternion.identity);
+                    _instantiation.transform.Rotate(hero._isFacingLeft ? new Vector3(0, 180, 0) : new Vector3(0, 0, 0));
+                    _instantiation.GetComponent<Trigger>().existTime = _existTime;
+
+                    //判断是否将技能物体作为角色的子物体
+                    if (_isChild)
+                    {
+                        _instantiation.transform.parent = hero.transform;
+                    }
+                    _instantiation.GetComponent<Trigger>().skill = this;
+                }
+
                 hero._nowState = Hero.state.acting;
             }
         };
