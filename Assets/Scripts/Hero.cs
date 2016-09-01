@@ -81,11 +81,11 @@ class Hero : MonoBehaviour {
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
-            if (_attr._skills.FindSkillByName("LieYanTuXi") == null)
+            if (_attr._skills.FindSkillByName("ShanXi") == null)
             {
                 Debug.Log("111");
             }
-            HandSkill(_attr._skills.FindSkillByName("LieYanTuXi"));
+            HandSkill(_attr._skills.FindSkillByName("ShanXi"));
         }
     }
 
@@ -137,6 +137,10 @@ class Hero : MonoBehaviour {
         }
         else
         {
+            if(skillable == 2)
+            {
+                _nowSkill._end(this);
+            }
             StartSkill(skill);
         }
     }
@@ -239,7 +243,7 @@ class Hero : MonoBehaviour {
     /// 作者：胡皓然
     public void Hit(Hero h)
     {
-        RageAdd(_nowSkill._AddRage);
+        RageAdd(_nowSkill._addRage);
     }
 
     /// <summary>
@@ -248,11 +252,11 @@ class Hero : MonoBehaviour {
     /// <param name="dizzyTimeInMs">硬直时间，以毫秒（ms）计</param>
     public void StartDizzy(float dizzyTimeInMs)
     {
-        if (_nowState == state.acting)
+        if (_nowState == state.acting || _nowState == state.BeforeAT || _nowState == state.FirstHalfAfterAT || _nowState == state.LastHalfAfterAT)
         {
-            Debug.Log(_nowSkill._instantiation);
+            Debug.Log(_nowSkill._skillName);
             Destroy(_nowSkill._instantiation);
-            _nowSkill.SetAnimBool(false);
+            _nowSkill._end(this);
         }
         _nowState = state.dizzy;
         _anim.SetBool("Dizzy", true);
@@ -367,7 +371,7 @@ class Hero : MonoBehaviour {
     }
 
     //判断是否可以移动
-    bool IsMoveable()
+    public bool IsMoveable()
     {
         if (_nowState == state.still || _nowState == state.jumping || _nowState == state.moving || _nowState == state.blocking)
             return true;
@@ -433,8 +437,8 @@ class Hero : MonoBehaviour {
     void TurnBack()
     {
         if (_isFacingLeft)
-            transform.localScale = new Vector3(-_scaleX, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
         else
-            transform.localScale = new Vector3(_scaleX, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
     }
 }

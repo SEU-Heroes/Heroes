@@ -88,7 +88,12 @@ class XmlOperate
                                 if (skillKeyNode.Name == "AddRage")
                                 {
                                     int addRage = int.Parse(skillKeyNode.InnerText);
-                                    skill._AddRage = addRage;
+                                    skill._addRage = addRage;
+                                }
+                                if (skillKeyNode.Name == "HitAddRage")
+                                {
+                                    int hitaddRage = int.Parse(skillKeyNode.InnerText);
+                                    skill._hitAddRage = hitaddRage;
                                 }
                                 if (skillKeyNode.Name == "aggressivity")
                                 {
@@ -103,22 +108,22 @@ class XmlOperate
                                 if (skillKeyNode.Name == "time")
                                 {
                                     float time = float.Parse(skillKeyNode.InnerText);
-                                    skill._Time = time;
+                                    skill._time = time;
                                 }
                                 if (skillKeyNode.Name == "BeforeAT")
                                 {
                                     float beforeAT = float.Parse(skillKeyNode.InnerText);
-                                    skill._BeforeAT = beforeAT;
+                                    skill._beforeAT = beforeAT;
                                 }
                                 if (skillKeyNode.Name == "firstAfterAT")
                                 {
                                     float firstAfterAT = float.Parse(skillKeyNode.InnerText);
-                                    skill._AfterATFirst = firstAfterAT;
+                                    skill._afterATFirst = firstAfterAT;
                                 }
                                 if (skillKeyNode.Name == "lastAfterAT")
                                 {
                                     float lastAfterAT = float.Parse(skillKeyNode.InnerText);
-                                    skill._AfterATLast = lastAfterAT;
+                                    skill._afterATLast = lastAfterAT;
                                 }
                                 if (skillKeyNode.Name == "existTime")
                                 {

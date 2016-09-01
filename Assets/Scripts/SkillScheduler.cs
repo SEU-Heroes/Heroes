@@ -11,7 +11,7 @@ using System.Collections;
  * 版本 V1.0 有旋风腿和跳跃的函数
  */
 
-class SkillScheduler{
+class SkillScheduler : MonoBehaviour{
     static public Skill.Start getStartFunction(int heroId,int skillId)
     {
         switch (heroId)
@@ -24,9 +24,29 @@ class SkillScheduler{
                     case 1:
                         return BackJumpStart;
                     case 2:
-                        return LieYanTuXiStart;
+                        return ShanXiStart;
                     case 3:
                         return XuanFengTuiStart;
+                    case 4:
+                        return HuoQiuStart;
+                    case 5:
+                        return HuoYanZhangKongStart;
+                    case 6:
+                        return TianFengHuoWuStart;
+                    default:
+                        return null;
+                }
+            case 1:
+                switch (skillId)
+                {
+                    case 0:
+                        return ZhenDangShaStart;
+                    case 1:
+                        return XunMengTuJiStart;
+                    case 2:
+                        return KuaiSuZhuaQuStart;
+                    case 3:
+                        return XueBaoStart;
                     default:
                         return null;
                 }
@@ -40,6 +60,26 @@ class SkillScheduler{
         switch (heroId)
         {
             case 0:
+                switch (skillId)
+                {
+                    case 0:
+                        return DefalutUpdate;
+                    case 1:
+                        return DefalutUpdate;
+                    case 2:
+                        return DefalutUpdate;
+                    case 3:
+                        return DefalutUpdate;
+                    case 4:
+                        return DefalutUpdate;
+                    case 5:
+                        return DefalutUpdate;
+                    case 6:
+                        return DefalutUpdate;
+                    default:
+                        return null;
+                }
+            case 1:
                 switch (skillId)
                 {
                     case 0:
@@ -73,6 +113,26 @@ class SkillScheduler{
                         return DefalutEnd;
                     case 3:
                         return DefalutEnd;
+                    case 4:
+                        return DefalutEnd;
+                    case 5:
+                        return DefalutEnd;
+                    case 6:
+                        return DefalutEnd;
+                    default:
+                        return null;
+                }
+            case 1:
+                switch (skillId)
+                {
+                    case 0:
+                        return DefalutEnd;
+                    case 1:
+                        return DefalutEnd;
+                    case 2:
+                        return DefalutEnd;
+                    case 3:
+                        return DefalutEnd;
                     default:
                         return null;
                 }
@@ -93,9 +153,29 @@ class SkillScheduler{
                     case 1:
                         return DefalutHit;
                     case 2:
-                        return DefalutHit;
+                        return ShanXiHit;
                     case 3:
                         return XuanFengTuiHit;
+                    case 4:
+                        return HuoQiuHit;
+                    case 5:
+                        return DefalutHit;
+                    case 6:
+                        return DefalutHit;
+                    default:
+                        return null;
+                }
+            case 1:
+                switch (skillId)
+                {
+                    case 0:
+                        return ZhenDangShaHit;
+                    case 1:
+                        return XunMengTuJiHit;
+                    case 2:
+                        return KuaiSuZhuaQuHit;
+                    case 3:
+                        return DefalutHit;
                     default:
                         return null;
                 }
@@ -104,7 +184,7 @@ class SkillScheduler{
         }
     }
 
-    static void LieYanTuXiStart(Hero h)
+    static void ShanXiStart(Hero h)
     {
         h.Move(5,0.1f);
     }
@@ -125,9 +205,69 @@ class SkillScheduler{
         h.Jump(new Vector2((h._isFacingLeft ? 1 : -1) * h._backJumpForce*1.5f, h._backJumpForce));
     }
 
+    static void ShanXiHit(Hero h)
+    {
+        h.StartDizzy(1500);
+    }
+
     static void XuanFengTuiHit(Hero h)
     {
-        h.StartDizzy(100);
+        h.StartDizzy(200);
+    }
+
+    static void HuoQiuStart(Hero h)
+    {
+        
+    }
+
+    static void HuoQiuHit(Hero h)
+    {
+
+    }
+
+    static void HuoYanZhangKongStart(Hero h)
+    {
+
+    }
+
+    static void TianFengHuoWuStart(Hero h)
+    {
+
+    }
+
+    static void ZhenDangShaStart(Hero h)
+    {
+
+    }
+
+    static void ZhenDangShaHit(Hero h)
+    {
+        h.StartDizzy(1000);
+    }
+
+    static void XunMengTuJiStart(Hero h)
+    {
+        h.Move(25, 0.1f);
+    }
+
+    static void XunMengTuJiHit(Hero h)
+    {
+
+    }
+
+    static void KuaiSuZhuaQuStart(Hero h)
+    {
+
+    }
+
+    static void KuaiSuZhuaQuHit(Hero h)
+    {
+        h.StartDizzy(1000);
+    }
+
+    static void XueBaoStart(Hero h)
+    {
+
     }
 
     /// <summary>
