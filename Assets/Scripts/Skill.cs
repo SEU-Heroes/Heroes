@@ -59,23 +59,46 @@ class Skill
             _useHero = hero;
             SetAnimBool(true);
             _useHero._nowState = Hero.state.BeforeAT;
+            _useHero.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
 
             if (_instantiation == null)
             {
+                // 根据角色朝向初始化生成物体的偏移
+                Vector3 realOffset = new Vector3((hero._isFacingLeft ? -1 : 1) * _offset.x, _offset.y, 0);
                 //生成技能物体
-                _instantiation = GameManager.GetInstance().Instantiate(GameManager._factory.GetSkillObject(hero._attr._heroId, _skillId), hero.transform.localPosition + _offset, Quaternion.identity);
+                _instantiation = GameManager.GetInstance().Instantiate(hero._skillCreator[_skillId], hero.transform.localPosition + realOffset, Quaternion.identity);
                 _instantiation.transform.Rotate(hero._isFacingLeft ? new Vector3(0, 180, 0) : new Vector3(0, 0, 0));
-                _instantiation.GetComponent<Trigger>().existTime = _existTime;
+                if (_instantiation.GetComponent<Trigger>() != null)
+                {
+                    _instantiation.GetComponent<Trigger>().existTime = _existTime;
+                    _instantiation.GetComponent<Trigger>().skill = this;
+                    _instantiation.GetComponent<Trigger>().hero = this._useHero;
+                }
+                else if (_instantiation.GetComponent<TriggerAndDestroy>() != null)
+                {
+                    _instantiation.GetComponent<TriggerAndDestroy>().existTime = _existTime;
+                    _instantiation.GetComponent<TriggerAndDestroy>().skill = this;
+                    _instantiation.GetComponent<TriggerAndDestroy>().hero = this._useHero;
+                }
+                else if (_instantiation.GetComponent<TianFengHuoWuBorner>() != null)
+                {
+                    _instantiation.GetComponent<TianFengHuoWuBorner>().existTime = _existTime;
+                    _instantiation.GetComponent<TianFengHuoWuBorner>().skill = this;
+                    _instantiation.GetComponent<TianFengHuoWuBorner>().hero = this._useHero;
+                }
 
                 //判断是否将技能物体作为角色的子物体
                 if (_isChild)
                 {
                     _instantiation.transform.parent = hero.transform;
                 }
-                _instantiation.GetComponent<Trigger>().skill = this;
+                else
+                {
+                    _instantiation = null;
+                }
             }
-
         };
+        _start += SkillScheduler.GetBeforeATFunction(_heroId, _skillId);
         _update = delegate(Hero hero, float time)
         {
             if (time > _time + _beforeAT + _afterATFirst + _afterATLast)
@@ -83,7 +106,7 @@ class Skill
                 if (!_skillHasStarted)
                 {
                     _skillHasStarted = true;
-                    SkillScheduler.getStartFunction(_heroId, _skillId)(hero);
+                    SkillScheduler.GetStartFunction(_heroId, _skillId)(hero);
                 }
                 _end(hero);
                 hero._nowState = Hero.state.still;
@@ -93,7 +116,7 @@ class Skill
                 if (!_skillHasStarted)
                 {
                     _skillHasStarted = true;
-                    SkillScheduler.getStartFunction(_heroId, _skillId)(hero);
+                    SkillScheduler.GetStartFunction(_heroId, _skillId)(hero);
                 }
                 hero._nowState = Hero.state.LastHalfAfterAT;
             }
@@ -103,7 +126,7 @@ class Skill
                 if (!_skillHasStarted)
                 {
                     _skillHasStarted = true;
-                    SkillScheduler.getStartFunction(_heroId, _skillId)(hero);
+                    SkillScheduler.GetStartFunction(_heroId, _skillId)(hero);
                 }
                 hero._nowState = Hero.state.FirstHalfAfterAT;
             }
@@ -112,19 +135,20 @@ class Skill
                 if (!_skillHasStarted)
                 {
                     _skillHasStarted = true;
-                    SkillScheduler.getStartFunction(_heroId, _skillId)(hero);
+                    SkillScheduler.GetStartFunction(_heroId, _skillId)(hero);
                 }
                 hero._nowState = Hero.state.acting;
             }
         };
-        _update += SkillScheduler.getUpdateFunction(_heroId,_skillId);
-        _end = SkillScheduler.getEndFunction(_heroId,_skillId);
+        _update += SkillScheduler.GetUpdateFunction(_heroId,_skillId);
+        _end = SkillScheduler.GetEndFunction(_heroId,_skillId);
         _end += delegate(Hero hero)
         {
+            _useHero.GetComponent<Rigidbody2D>().gravityScale = 5;
             SetAnimBool(false);
             _skillHasStarted = false;
         };
-        _hit = SkillScheduler.getHitFunction(_heroId,_skillId);
+        _hit = SkillScheduler.GetHitFunction(_heroId,_skillId);
         _hit += delegate(Hero hero)
         {
             _useHero.RageAdd(_addRage);

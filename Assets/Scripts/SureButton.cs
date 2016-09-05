@@ -33,7 +33,8 @@ public class SureButton : MonoBehaviour {
         names.Add("JiXiaoke");
 
         // change the scene
-        GameManager.GetInstance().StartFightScene(names);
+        GameManager.GetInstance()._controlPlayer = 1;
+        GameManager.GetInstance().StartFightScene(names,names);
 	}
 
 	// Update is called once per frame

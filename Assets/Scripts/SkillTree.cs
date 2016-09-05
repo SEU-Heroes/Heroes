@@ -11,14 +11,16 @@ using UnityEngine;
 
 /*
  * 版本 V1.0 能添加技能，能查找技能
+ * 版本 V2.0 从树状的存储换为了List
  */
 
 class SkillTree
 {
-    SkillNode root;
+    List<Skill> skills;
+
     public SkillTree()
     {
-        root = new SkillNode(InputReceiver.dir.down);
+        skills = new List<Skill>();
     }
 
     /// <summary>
@@ -27,14 +29,12 @@ class SkillTree
     /// <param name="input">技能轨迹序列</param>
     /// <param name="s">技能</param>
     /// 作者：胡皓然
-    public void Add(List<InputReceiver.dir> input,Skill s)
+    public void Add(Skill s)
     {
-        SkillNode theRoot = root;
-        for (int i = 0; i < input.Count; i++)
+        if (!CheckSkill(s))
         {
-            theRoot = theRoot.AddChild(new SkillNode(input[i]));
+            skills.Add(s);
         }
-        theRoot.AddChild(s);
     }
 
     /// <summary>
@@ -43,27 +43,39 @@ class SkillTree
     /// <param name="input">技能的序列</param>
     /// <returns>找到了就返回该技能，否则返回null</returns>
     /// 作者：胡皓然
-    public Skill CheckSkill(List<InputReceiver.dir> input)
+    public bool CheckSkill(Skill s)
     {
-        SkillNode theLeaf = root;
-        for (int i = 0; i < input.Count; i++)
+        foreach (Skill skill in skills)
         {
-            theLeaf = theLeaf.GetChild(input[i]);
-            if (theLeaf == null)
+            if (skill._skillName == s._skillName)
             {
-                return null;
+                return true;
             }
         }
-        return theLeaf.GetSkill();
+        return false;
     }
 
     public Skill FindSkillById(int id)
     {
-        return root.FindSkillById(id);
+        foreach (Skill skill in skills)
+        {
+            if (skill._skillId == id)
+            {
+                return skill;
+            }
+        }
+        return null;
     }
 
     public Skill FindSkillByName(string name)
     {
-        return root.FindSkillByName(name);
+        foreach (Skill skill in skills)
+        {
+            if (skill._skillName == name)
+            {
+                return skill;
+            }
+        }
+        return null;
     }
 }

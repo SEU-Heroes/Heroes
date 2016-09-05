@@ -15,6 +15,10 @@ using System.Collections.Generic;
 
 class Hero : MonoBehaviour {
 
+    public int _id;//玩家ID
+
+    public GameObject[] _skillCreator;//角色技能的生成物体
+
     //角色状态枚举
     public enum state { still, jumping, floating, dizzy, falling, blocking, moving, BeforeAT, FirstHalfAfterAT, LastHalfAfterAT, unControlable, acting };
 
@@ -58,6 +62,7 @@ class Hero : MonoBehaviour {
         {
             if (_nowState == state.jumping)
             {
+                Debug.Log("111");
                 _nowState = state.still;
             }
         }
@@ -65,11 +70,7 @@ class Hero : MonoBehaviour {
         //PC机上操作检测
         if (Input.GetKeyDown(KeyCode.D))
         {
-            List<InputReceiver.dir> list = new List<InputReceiver.dir>();
-            list.Add(InputReceiver.dir.up);
-            list.Add(InputReceiver.dir.down);
-            list.Add(InputReceiver.dir.left);
-            HandInput(list);
+            HandSkill(_attr._skills.FindSkillByName("XuanFengTui"));
         }
         else if(Input.GetKeyDown(KeyCode.W))
         {
@@ -81,11 +82,19 @@ class Hero : MonoBehaviour {
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
-            if (_attr._skills.FindSkillByName("ShanXi") == null)
-            {
-                Debug.Log("111");
-            }
             HandSkill(_attr._skills.FindSkillByName("ShanXi"));
+        }
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            HandSkill(_attr._skills.FindSkillByName("HuoQiu"));
+        }
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            HandSkill(_attr._skills.FindSkillByName("HuoYanZhangKong"));
+        }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            HandSkill(_attr._skills.FindSkillByName("TianFengHuoWu"));
         }
     }
 
@@ -104,22 +113,9 @@ class Hero : MonoBehaviour {
         //放技能时每一帧改变角色状态
         if (_nowState == state.acting || _nowState == state.BeforeAT || _nowState == state.LastHalfAfterAT || _nowState == state.FirstHalfAfterAT)
         {
+            Debug.Log(_nowState);
             _actTime += Time.deltaTime;
             _nowSkill._update(this, _actTime);
-        }
-    }
-
-    /// <summary>
-    /// 处理屏幕轨迹输入
-    /// </summary>
-    /// <param name="input">轨迹序列</param>
-    /// 作者：胡皓然
-    public void HandInput(List<InputReceiver.dir> input)
-    {
-        Skill skill = CheckSkill(input);
-        if (skill != null)
-        {
-            HandSkill(skill);
         }
     }
 
@@ -212,17 +208,17 @@ class Hero : MonoBehaviour {
     /// <param name="distance">移动距离</param>
     /// <param name="time">所需时间</param>
     /// 作者：胡皓然
-    public void Move(int distance, float time)
+    public void Move(Vector3 destination, float time)
     {
         _moveTime = time;
-        _speed = distance / time;
+        _speed = destination.magnitude / time;
         if (_isFacingLeft)
         {
-            _aimPosition = new Vector3(transform.localPosition.x - distance, transform.localPosition.y, transform.localPosition.z);
+            _aimPosition = new Vector3(transform.localPosition.x - destination.x, transform.localPosition.y + destination.y, transform.localPosition.z);
         }
         else
         {
-            _aimPosition = new Vector3(transform.localPosition.x + distance, transform.localPosition.y, transform.localPosition.z);
+            _aimPosition = new Vector3(transform.localPosition.x + destination.x, transform.localPosition.y + destination.y, transform.localPosition.z);
         }
     }
 
@@ -254,7 +250,6 @@ class Hero : MonoBehaviour {
     {
         if (_nowState == state.acting || _nowState == state.BeforeAT || _nowState == state.FirstHalfAfterAT || _nowState == state.LastHalfAfterAT)
         {
-            Debug.Log(_nowSkill._skillName);
             Destroy(_nowSkill._instantiation);
             _nowSkill._end(this);
         }
@@ -286,7 +281,7 @@ class Hero : MonoBehaviour {
             realReduce = num - GameManager._defenseForce;
         }
         _attr._HP -= realReduce;
-        GameManager.GetInstance().HPReduce(this, num);
+        GameManager.GetInstance().HPReduce(_id, num);
     }
 
     /// <summary>
@@ -335,17 +330,6 @@ class Hero : MonoBehaviour {
         _actTime = 0;
     }
 
-    /// <summary>
-    /// 判断是否有相应轨迹的技能
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns>有技能则返回相应技能，没有就返回null</returns>
-    /// 作者：胡皓然
-    Skill CheckSkill(List<InputReceiver.dir> input)
-    {
-        return _attr._skills.CheckSkill(input);
-    }
-
     // 将角色的状态从眩晕（硬直）中恢复
     void CancelDizzyState()
     {
@@ -357,9 +341,9 @@ class Hero : MonoBehaviour {
     /// 判断当前是否能释放技能
     /// </summary>
     /// <returns>0：不能释放 1：能正常释放 2：能连击释放</returns>
-    int IsSkillable()
+    public int IsSkillable()
     {
-        if (_nowState == state.still || _nowState == state.jumping || _nowState == state.moving || _nowState == state.blocking)
+        if (_nowState == state.still || _nowState == state.moving || _nowState == state.blocking||_nowState == state.jumping)
         {
             return 1;
         }
@@ -373,7 +357,7 @@ class Hero : MonoBehaviour {
     //判断是否可以移动
     public bool IsMoveable()
     {
-        if (_nowState == state.still || _nowState == state.jumping || _nowState == state.moving || _nowState == state.blocking)
+        if (_nowState == state.still || _nowState == state.moving || _nowState == state.blocking)
             return true;
         return false;
     }
@@ -410,7 +394,10 @@ class Hero : MonoBehaviour {
     /// 作者：胡皓然
     void Move()
     {
-        transform.localPosition = new Vector3(Mathf.Lerp(transform.localPosition.x, _aimPosition.x, _speed * Time.deltaTime), transform.localPosition.y, transform.localPosition.z);
+        transform.localPosition = new Vector3
+            (Mathf.Lerp(transform.localPosition.x, _aimPosition.x, _speed * Time.deltaTime),
+            Mathf.Lerp(transform.localPosition.y, _aimPosition.y, _speed * Time.deltaTime),
+            transform.localPosition.z);
     }
 
     //停止角色左右移动

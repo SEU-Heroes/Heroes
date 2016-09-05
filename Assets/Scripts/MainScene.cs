@@ -20,6 +20,8 @@ using UnityEngine.UI;
 class MainScene : MonoBehaviour {
 
     static public MainScene _instance;
+
+    public Image _gestureDisplay;//用于展示轨迹
     
     private float totalHP; // 玩家HP总量
     private float totalSP; // 玩家SP总量
@@ -67,6 +69,9 @@ class MainScene : MonoBehaviour {
     /// 作者：庄亦舟
     void Start()
     {
+        //初始设置轨迹展示UI不显示
+        //_gestureDisplay.enabled = false;
+
         // 动态设置角色初始HP为最大值
         player1HP = player2HP = totalHP;
         player1HP1.maxValue = player1HP2.maxValue = player2HP1.maxValue = player2HP2.maxValue = totalHP;
@@ -194,7 +199,7 @@ class MainScene : MonoBehaviour {
 
     public void SPAdd(Hero hero, int num)
     {
-        if (hero == GameManager.GetInstance().GetMainPlayer().GetHero())
+        if (hero._id == 1)
         {
             player1SP += num;
             player1SPSlider.value += num;

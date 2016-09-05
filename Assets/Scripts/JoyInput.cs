@@ -42,9 +42,9 @@ public class JoyInput: MonoBehaviour
         if (move.joystickName == "Movejoystick")
         {
             JInput.Clear();
-           
 
-            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.none);
+
+            GameManager.GetInstance().GetPlayer(GameManager.GetInstance()._controlPlayer).HandDirection(InputReceiver.joyDir.none);
         }
     }
 
@@ -73,27 +73,27 @@ public class JoyInput: MonoBehaviour
         double angleCos = last1 / last2;
         if ((Mathf.Cos(Mathf.PI / 4)) <= angleCos)
         {
-            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.right);
+            GameManager.GetInstance().GetPlayer(GameManager.GetInstance()._controlPlayer).HandDirection(InputReceiver.joyDir.right);
             
         }
         else if ((Mathf.Cos((Mathf.PI * 3) / 4) <= angleCos) && (angleCos < Mathf.Cos(Mathf.PI / 4)) && (y >= 0))
         {
-            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.up);
+            GameManager.GetInstance().GetPlayer(GameManager.GetInstance()._controlPlayer).HandDirection(InputReceiver.joyDir.up);
             
         }
         else if ((angleCos < Mathf.Cos((Mathf.PI * 5) / 4)) && (angleCos >= Mathf.Cos(Mathf.PI)))
         {
-            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.left);
+            GameManager.GetInstance().GetPlayer(GameManager.GetInstance()._controlPlayer).HandDirection(InputReceiver.joyDir.left);
           
         }
         else if ((Mathf.Cos((Mathf.PI * 5) / 4) <= angleCos) && (angleCos < Mathf.Cos((Mathf.PI * 7) / 4)) && y < 0)
         {
-            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.down);
+            GameManager.GetInstance().GetPlayer(GameManager.GetInstance()._controlPlayer).HandDirection(InputReceiver.joyDir.down);
            
         }
         else
         {
-            GameManager.GetInstance().GetMainPlayer().HandDirection(InputReceiver.joyDir.none);
+            GameManager.GetInstance().GetPlayer(GameManager.GetInstance()._controlPlayer).HandDirection(InputReceiver.joyDir.none);
            
         }
     }

@@ -87,23 +87,23 @@
       <Skill SkillName="HuoQiu">
         <IsCreated>1</IsCreated>
         <offset>
-          <x>0</x>
+          <x>1</x>
           <y>0</y>
         </offset>
         <AddRage>80</AddRage>
         <HitAddRage>40</HitAddRage>
-        <aggressivity>100</aggressivity>
+        <aggressivity>200</aggressivity>
         <skillId>4</skillId>
         <time>0.1</time>
         <BeforeAT>0.3</BeforeAT>
         <firstAfterAT>0.5</firstAfterAT>
         <lastAfterAT>0.5</lastAfterAT>
         <existTime>5</existTime>
-        <isChild>1</isChild>
+        <isChild>0</isChild>
         <tralls>
           <trall>0</trall>
           <trall>1</trall>
-          <trall>2</trall>
+          <trall>3</trall>
         </tralls>
       </Skill>
       <Skill SkillName="HuoYanZhangKong">
@@ -117,38 +117,38 @@
         <aggressivity>0</aggressivity>
         <skillId>5</skillId>
         <time>0</time>
-        <BeforeAT>0</BeforeAT>
+        <BeforeAT>0.2</BeforeAT>
         <firstAfterAT>0.1</firstAfterAT>
         <lastAfterAT>0.1</lastAfterAT>
-        <existTime>0</existTime>
+        <existTime>0.5</existTime>
         <isChild>1</isChild>
         <tralls>
           <trall>0</trall>
           <trall>1</trall>
-          <trall>2</trall>
+          <trall>4</trall>
         </tralls>
       </Skill>
       <Skill SkillName="TianFengHuoWu">
         <IsCreated>1</IsCreated>
         <offset>
           <x>0</x>
-          <y>0</y>
+          <y>2.5</y>
         </offset>
         <AddRage>120</AddRage>
         <HitAddRage>100</HitAddRage>
-        <aggressivity>200</aggressivity>
+        <aggressivity>50</aggressivity>
         <skillId>6</skillId>
         <time>0</time>
         <BeforeAT>1</BeforeAT>
         <firstAfterAT>0.5</firstAfterAT>
         <lastAfterAT>0.5</lastAfterAT>
-        <existTime>0</existTime>
-        <isChild>1</isChild>
+        <existTime>5</existTime>
+        <isChild>0</isChild>
         <tralls>
           <trall>0</trall>
           <trall>1</trall>
-          <trall>2</trall>
-        </tralls>
+          <trall>6</trall>
+        </tralls> 
       </Skill>
     </Skills>
   </Hero>

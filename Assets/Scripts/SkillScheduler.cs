@@ -12,7 +12,45 @@ using System.Collections;
  */
 
 class SkillScheduler : MonoBehaviour{
-    static public Skill.Start getStartFunction(int heroId,int skillId)
+
+    static public Skill.Start GetBeforeATFunction(int heroid, int skillid)
+    {
+        switch (heroid)
+        {
+            case 0:
+                switch (skillid)
+                {
+                    case 0:
+                        return DefaultBeforeAT;
+                    case 1:
+                        return DefaultBeforeAT;
+                    case 2:
+                        return DefaultBeforeAT;
+                    case 3:
+                        return DefaultBeforeAT;
+                    case 4:
+                        return DefaultBeforeAT;
+                    case 5:
+                        return DefaultBeforeAT;
+                    case 6:
+                        return TianFengHuoWuBeforeAT;
+                    default:
+                        return null;
+                }
+            case 1:
+                switch (skillid)
+                {
+                    case 0:
+                        return DefaultBeforeAT;
+                    default:
+                        return null;
+                }
+            default:
+                return null;
+        }
+    }
+
+    static public Skill.Start GetStartFunction(int heroId,int skillId)
     {
         switch (heroId)
         {
@@ -55,7 +93,7 @@ class SkillScheduler : MonoBehaviour{
         }
     }
 
-    static public Skill.Update getUpdateFunction(int heroId, int skillId)
+    static public Skill.Update GetUpdateFunction(int heroId, int skillId)
     {
         switch (heroId)
         {
@@ -63,7 +101,7 @@ class SkillScheduler : MonoBehaviour{
                 switch (skillId)
                 {
                     case 0:
-                        return DefalutUpdate;
+                        return JumpUpdate;
                     case 1:
                         return DefalutUpdate;
                     case 2:
@@ -75,7 +113,7 @@ class SkillScheduler : MonoBehaviour{
                     case 5:
                         return DefalutUpdate;
                     case 6:
-                        return DefalutUpdate;
+                        return TianFengHuoWuUpdate;
                     default:
                         return null;
                 }
@@ -98,7 +136,7 @@ class SkillScheduler : MonoBehaviour{
         }
     }
 
-    static public Skill.End getEndFunction(int heroId, int skillId)
+    static public Skill.End GetEndFunction(int heroId, int skillId)
     {
         switch (heroId)
         {
@@ -141,7 +179,7 @@ class SkillScheduler : MonoBehaviour{
         }
     }
 
-    static public Skill.Hit getHitFunction(int heroId, int skillId)
+    static public Skill.Hit GetHitFunction(int heroId, int skillId)
     {
         switch (heroId)
         {
@@ -161,7 +199,7 @@ class SkillScheduler : MonoBehaviour{
                     case 5:
                         return DefalutHit;
                     case 6:
-                        return DefalutHit;
+                        return TianFengHuoWuHit;
                     default:
                         return null;
                 }
@@ -184,15 +222,29 @@ class SkillScheduler : MonoBehaviour{
         }
     }
 
+    static void DefaultBeforeAT(Hero h)
+    {
+
+    }
+
+    static void TianFengHuoWuBeforeAT(Hero h)
+    {
+        
+        h.Move(new Vector3(0.3f, 2.5f, 0), 0.4f);
+        h.GetComponent<Rigidbody2D>().gravityScale = 0;
+    }
+
+
+
     static void ShanXiStart(Hero h)
     {
-        h.Move(5,0.1f);
+        h.Move(new Vector3(5, 0, 0),0.1f);
     }
 
 
     static void XuanFengTuiStart(Hero h)
     {
-        h.Move(3, 1.3f);  
+        h.Move(new Vector3(3, 0, 0), 1.3f);  
     }
 
     static void JumpStart(Hero h)
@@ -200,9 +252,27 @@ class SkillScheduler : MonoBehaviour{
         h.Jump(new Vector2(0,h._jumpForce));
     }
 
+    static void JumpUpdate(Hero h, float time)
+    {
+        h._nowState = Hero.state.jumping;
+    }
+
     static void BackJumpStart(Hero h)
     {
         h.Jump(new Vector2((h._isFacingLeft ? 1 : -1) * h._backJumpForce*1.5f, h._backJumpForce));
+    }
+
+    static void HuoQiuStart(Hero h)
+    {
+    }
+
+    static void HuoYanZhangKongStart(Hero h)
+    {
+        GameObject[] fireBalls = GameObject.FindGameObjectsWithTag(Tags.fireball);
+        foreach (GameObject fireball in fireBalls)
+        {
+            fireball.GetComponent<Rigidbody2D>().velocity = new Vector3(h._isFacingLeft?-5:5, 0, 0);
+        }
     }
 
     static void ShanXiHit(Hero h)
@@ -215,24 +285,20 @@ class SkillScheduler : MonoBehaviour{
         h.StartDizzy(200);
     }
 
-    static void HuoQiuStart(Hero h)
-    {
-        
-    }
-
     static void HuoQiuHit(Hero h)
     {
-
+        h.StartDizzy(300);
     }
 
-    static void HuoYanZhangKongStart(Hero h)
-    {
-
-    }
 
     static void TianFengHuoWuStart(Hero h)
     {
 
+    }
+
+    static void TianFengHuoWuHit(Hero h)
+    {
+        h.StartDizzy(200);
     }
 
     static void ZhenDangShaStart(Hero h)
@@ -247,7 +313,6 @@ class SkillScheduler : MonoBehaviour{
 
     static void XunMengTuJiStart(Hero h)
     {
-        h.Move(25, 0.1f);
     }
 
     static void XunMengTuJiHit(Hero h)
@@ -279,6 +344,12 @@ class SkillScheduler : MonoBehaviour{
     static void DefalutUpdate(Hero h, float time)
     {
 
+    }
+
+    static void TianFengHuoWuUpdate(Hero h, float time)
+    {
+        if(h._nowState >= Hero.state.LastHalfAfterAT)
+            h.GetComponent<Rigidbody2D>().gravityScale = 5;
     }
 
     static void DefalutEnd(Hero h)

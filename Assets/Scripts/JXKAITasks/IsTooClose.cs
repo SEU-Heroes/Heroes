@@ -10,7 +10,8 @@ public class IsTooClose : Conditional {
 
     public override void OnStart()
     {
-        target = GameObject.FindGameObjectWithTag(Tags.player).transform;
+        // 此处应在后期加上异常处理
+        target = GameObject.FindGameObjectWithTag(Tags.player01).transform;
     }
 
     public override TaskStatus OnUpdate()

@@ -62,27 +62,16 @@ class Player{
     /// 作者：胡皓然
     public void Instantiate(Vector3 position,Quaternion q)
     {
-        _nowHero = GameManager.GetInstance().Instantiate(GameManager._factory.GetHero(_heroes[_nowHeroNum]._heroId), position, q).GetComponent<Hero>();
+        _nowHero = GameManager.GetInstance().Instantiate(GameManager._prefabManager.GetHero(_heroes[_nowHeroNum]._heroId), position, q).GetComponent<Hero>();
+        _nowHero._id = _id;
         Camera.main.GetComponent<FollowPlayers>().setPlayer(_nowHero,_id);
         _nowHero._attr = _heroes[_nowHeroNum];
-    }
-
-    //传递轨迹输入
-    public void HandInput(List<InputReceiver.dir> input)
-    {
-        _nowHero.HandInput(input);
     }
 
     //传递方向输入
     public void HandDirection(InputReceiver.joyDir dir)
     {
         _nowHero.HandDirection(dir);
-    }
-
-    //传递手指停留操作
-    public void TouchStay(List<InputReceiver.dir> input)
-    {
-        _nowHero.TouchStay(input);
     }
 
     /// <summary>

@@ -65,7 +65,6 @@ class XmlOperate
                             
                             foreach (XmlNode skillKeyNode in skillKeyList)
                             {
-                          
                                 ///获得技能的各个属性
                                 if (skillKeyNode.Name == "IsCreated")
                                 {
@@ -75,14 +74,15 @@ class XmlOperate
                                 if (skillKeyNode.Name == "offset")
                                 {
                                     XmlNodeList offsetAttrList = skillKeyNode.ChildNodes;
+                                    float x = 0, y = 0;
                                     foreach (XmlNode offsetAttr in offsetAttrList)
                                     {
-                                        int x = 0, y = 0;
                                         if (offsetAttr.Name == "x")
-                                            x = int.Parse(offsetAttr.InnerText);
+                                            x = float.Parse(offsetAttr.InnerText);
                                         if (offsetAttr.Name == "y")
-                                            y = int.Parse(offsetAttr.InnerText);
-                                        Vector3 vector = new Vector3(x, y);
+                                            y = float.Parse(offsetAttr.InnerText);
+                                        Vector3 vector = new Vector3(x, y, 0);
+                                        skill._offset = vector;
                                     }
                                 }
                                 if (skillKeyNode.Name == "AddRage")
@@ -146,7 +146,7 @@ class XmlOperate
                             }
                             skill.SetFunc();
                             ///把技能添加到技能树
-                            skillTree.Add(dirList, skill);
+                            skillTree.Add(skill);
                         }
                        
                     }

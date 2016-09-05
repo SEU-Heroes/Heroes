@@ -87,8 +87,8 @@ public class RoundStart : MonoBehaviour {
     }
     public void ReadyToFight()
     {
-        GameManager.GetInstance().GetMainPlayer().GetHero().StartGame();
-        GameManager.GetInstance().GetOtherPlayer().GetHero().StartGame();
+        GameManager.GetInstance().GetPlayer(1).GetHero().StartGame();
+        GameManager.GetInstance().GetPlayer(2).GetHero().StartGame();
 
         // 调整字体颜色和斜体，开始倒计时
         readyText.color = new Color(200, 0, 0);

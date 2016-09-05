@@ -7,5 +7,7 @@ public class Tags : MonoBehaviour {
     public static string player02 = "Player02";
     public static string player = "Player";
     public static string hit = "Hit";
+    public static string fireball = "FireBall";
+    public static string boundary = "Boundary";
 
 }

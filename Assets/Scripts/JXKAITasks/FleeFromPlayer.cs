@@ -15,7 +15,7 @@ public class FleeFromPlayer : Action
 
     public override void OnStart()
     {
-        target = GameObject.FindGameObjectWithTag(Tags.player).transform;
+        target = GameObject.FindGameObjectWithTag(Tags.player01).transform;
         hero = GetComponent<Hero>();
     }
 
