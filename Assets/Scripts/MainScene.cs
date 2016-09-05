@@ -21,7 +21,13 @@ class MainScene : MonoBehaviour {
 
     static public MainScene _instance;
 
-    public Image _gestureDisplay;//用于展示轨迹
+    /// <summary>
+    /// EX必杀时的UI
+    /// </summary>
+    public GameObject _gestureDisplay;//用于展示轨迹
+    public GameObject _maskBlack;//用来在释放EX必杀时慢慢使背景变黑
+    public GameObject _maskRed;//用来在EX必杀使用成功时使全屏幕变红
+    public GameObject _nowChanging;//正在改变透明度的物体
     
     private float totalHP; // 玩家HP总量
     private float totalSP; // 玩家SP总量
@@ -69,8 +75,10 @@ class MainScene : MonoBehaviour {
     /// 作者：庄亦舟
     void Start()
     {
-        //初始设置轨迹展示UI不显示
-        //_gestureDisplay.enabled = false;
+        //初始设置EXUI不显示
+        _gestureDisplay.GetComponent<Renderer>().enabled = false;
+        _maskBlack.GetComponent<Renderer>().enabled = false;
+        _maskRed.GetComponent<Renderer>().enabled = false;
 
         // 动态设置角色初始HP为最大值
         player1HP = player2HP = totalHP;
@@ -155,6 +163,43 @@ class MainScene : MonoBehaviour {
     }
 
     /// <summary>
+    /// 显示EX必杀技的UI
+    /// </summary>
+    public void ShowEXUI()
+    {
+        _maskBlack.GetComponent<Renderer>().enabled = true;
+        ColorFade(_maskBlack, Color.black, new Color(Color.black.r, Color.black.g, Color.black.b, 1), 1.5f);
+        _gestureDisplay.GetComponent<Renderer>().enabled = true;
+    }
+
+    /// <summary>
+    /// EX必杀的全屏闪烁
+    /// </summary>
+    public void Twinkle()
+    {
+        _maskRed.GetComponent<Renderer>().enabled = true;
+        Invoke("RedHide", 1f);
+    }
+
+    /// <summary>
+    /// 隐藏红色特效
+    /// </summary>
+    void RedHide()
+    {
+        _maskRed.GetComponent<Renderer>().enabled = false;
+    }
+
+    /// <summary>
+    /// 隐藏EX必杀技的UI
+    /// </summary>
+    public void HideEXUI()
+    {
+        _gestureDisplay.GetComponent<Image>().enabled = false;
+        _maskBlack.GetComponent<Image>().enabled = false;
+        _maskRed.GetComponent<Image>().enabled = false;
+    }
+
+    /// <summary>
     /// 利用线程暂停2帧来达到血条缓慢减少的特效
     /// </summary>
     /// <param name="targetHP"></param>
@@ -211,4 +256,15 @@ class MainScene : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// 使物体的颜色渐变
+    /// </summary>
+    /// <param name="gameObject">要渐变的物体</param>
+    /// <param name="from">起始颜色</param>
+    /// <param name="end">结束颜色</param>
+    /// <param name="time">渐变时间</param>
+    void ColorFade(GameObject gameObject, Color from, Color end, float time)
+    {
+
+    }
 }

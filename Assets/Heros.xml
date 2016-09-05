@@ -53,8 +53,8 @@
         <skillId>2</skillId>
         <time>0.01</time>
         <BeforeAT>0.4</BeforeAT>
-        <firstAfterAT>0.15</firstAfterAT>
-        <lastAfterAT>0.15</lastAfterAT>
+        <firstAfterAT>0.4</firstAfterAT>
+        <lastAfterAT>0.5</lastAfterAT>
         <existTime>0.71</existTime>
         <isChild>0</isChild>
         <tralls>
@@ -63,7 +63,7 @@
         </tralls>
       </Skill>
       <Skill SkillName="XuanFengTui">
-        <IsCreated>0</IsCreated>
+        <IsCreated>1</IsCreated>
         <offset>
           <x>0</x>
           <y>0</y>
@@ -138,8 +138,8 @@
         <HitAddRage>100</HitAddRage>
         <aggressivity>50</aggressivity>
         <skillId>6</skillId>
-        <time>0</time>
-        <BeforeAT>1</BeforeAT>
+        <time>0.5</time>
+        <BeforeAT>0.8</BeforeAT>
         <firstAfterAT>0.5</firstAfterAT>
         <lastAfterAT>0.5</lastAfterAT>
         <existTime>5</existTime>

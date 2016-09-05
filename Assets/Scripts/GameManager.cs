@@ -65,7 +65,9 @@ class GameManager:MonoBehaviour{
     int _EXLevel;//当前EX必杀技轨迹展示等级
     float _EXTime;//EX必杀技剩余时间
     int _nowGestureId;//正在展示的轨迹在所属等级的ID
-    int _EXHero;//正在释放EX必杀技的玩家ID
+    int _EXCount;//已经成功完成的EX轨迹次数
+    Hero _EXHero;//释放EX必杀技的角色
+    bool _isTimeFlow;//播放动画时导致计时暂停的状态位
 
     void Awake()
     {
@@ -146,6 +148,18 @@ class GameManager:MonoBehaviour{
     }
 
     /// <summary>
+    /// 根据传入的一个Hero得到场景中的另一个Hero
+    /// </summary>
+    /// <param name="h"></param>
+    /// <returns>另一个Hero</returns>
+    public Hero GetOtherHero(Hero h)
+    {
+        if (_playerLeft.GetHero() == h)
+            return _playerRight.GetHero();
+        return _playerLeft.GetHero();
+    }
+
+    /// <summary>
     /// 在切换到战斗场景时调用
     /// </summary>
     /// <param name="names">战斗的角色名列表，Player1在前，Player2在后，人机对战只需要玩家的角色名</param>
@@ -191,17 +205,17 @@ class GameManager:MonoBehaviour{
     /// <param name="gesture"></param>
     public void HandleGesture(string gestureName,float match)
     {
-        if (_isEXing&&_EXHero == _controlPlayer)
+        if (_isEXing&&_EXHero._id == _controlPlayer)
         {
             GestureMatch(gestureName, match);
         }
-        else if (gestureName == "EX")
-        {
-            if (GetPlayer(_controlPlayer).GetHero().IsSkillable() != 0)
-            {
-                StartEX(GetPlayer(_controlPlayer).GetHero());
-            }
-        }
+//         else if (gestureName == "EX")
+//         {
+//             if (GetPlayer(_controlPlayer).GetHero().IsSkillable() != 0)
+//             {
+//                 StartEX(GetPlayer(_controlPlayer).GetHero());
+//             }
+//         }
         else
         {
             Skill theSkill;
@@ -240,16 +254,28 @@ class GameManager:MonoBehaviour{
     /// 开始EX必杀技
     /// </summary>
     /// <param name="hero">释放EX必杀技的角色</param>
-    void StartEX(Hero hero)
+    public void StartEX(Hero hero)
     {
+        _isTimeFlow = true;
+        _EXHero = hero;
         _isEXing = true;
         _EXLevel = 0;
         _EXId = hero._id;
         _EXTime = totalEXTime;
-        MainScene._instance._gestureDisplay.enabled = true;
+        _EXCount = 0;
+        MainScene._instance.ShowEXUI();
         InstantiateGesture(_EXLevel);
         _playerLeft.GetHero()._nowState = Hero.state.unControlable;
         _playerRight.GetHero()._nowState = Hero.state.unControlable;
+    }
+
+    /// <summary>
+    /// 开始EX必杀技的动画
+    /// </summary>
+    void StartEXAnim()
+    {
+        _isTimeFlow = false;
+        _EXHero.gameObject.GetComponent<Animator>().SetTrigger("EX" + _EXLevel);
     }
 
     /// <summary>
@@ -258,9 +284,13 @@ class GameManager:MonoBehaviour{
     /// <param name="id">最佳匹配轨迹的ID</param>
     void GestureMatch(string gestureName,float match)
     {
+        //手势匹配成功
         if (GetGestureId(gestureName) == _nowGestureId)
         {
+            StartEXAnim();
             EXLevelUp();
+
+            _EXCount++;
 
             //处理匹配度得分
         }
@@ -274,7 +304,7 @@ class GameManager:MonoBehaviour{
     {
         //实例化一个相应等级的轨迹展示预制资源
         var gesture = _GestureManager[level].GetComponent<GestureManager>().GetRandGesture();
-        MainScene._instance._gestureDisplay.sprite = gesture._gestureSprite;
+        MainScene._instance._gestureDisplay.GetComponent<Image>().sprite = gesture._gestureSprite;
         _nowGestureId = gesture._id;
     }
 

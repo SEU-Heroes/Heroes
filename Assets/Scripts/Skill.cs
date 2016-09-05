@@ -26,6 +26,7 @@ class Skill
     public bool _isChild;//生成的技能物体是否是人物的子物体
     public float _existTime;//生成物体的存在时间
     public float _hitAddRage;//打中后被攻击的角色增加的怒气值
+    public bool _isCombo;//技能是否是连击释放
     
     public Hero _useHero;//使用技能的角色
     public Hero _hitHero;//被击中的角色
@@ -54,7 +55,8 @@ class Skill
     /// 作者：胡皓然
     public void SetFunc()
     {
-        _start = delegate(Hero hero)
+        _start = SkillScheduler.GetBeforeATFunction(_heroId, _skillId);
+        _start += delegate(Hero hero)
         {
             _useHero = hero;
             SetAnimBool(true);
@@ -98,7 +100,6 @@ class Skill
                 }
             }
         };
-        _start += SkillScheduler.GetBeforeATFunction(_heroId, _skillId);
         _update = delegate(Hero hero, float time)
         {
             if (time > _time + _beforeAT + _afterATFirst + _afterATLast)

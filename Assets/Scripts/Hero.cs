@@ -15,12 +15,13 @@ using System.Collections.Generic;
 
 class Hero : MonoBehaviour {
 
+    [HideInInspector]
     public int _id;//玩家ID
 
     public GameObject[] _skillCreator;//角色技能的生成物体
 
     //角色状态枚举
-    public enum state { still, jumping, floating, dizzy, falling, blocking, moving, BeforeAT, FirstHalfAfterAT, LastHalfAfterAT, unControlable, acting };
+    public enum state { still, jumping, floating, dizzy, falling, moving, BeforeAT, acting, FirstHalfAfterAT, LastHalfAfterAT, unControlable, blocking };
 
     //角色当前状态
     public state _nowState = state.unControlable;//角色目前的状态
@@ -28,8 +29,14 @@ class Hero : MonoBehaviour {
     public HeroAttr _attr;//角色属性
     [HideInInspector]
     public bool _isFacingLeft = false;//角色是否朝向左边
-    Skill _nowSkill;//正在释放的技能
+    [HideInInspector]
+    public Skill _nowSkill;//正在释放的技能
     bool isJumping;//是否正在跳跃
+    public bool _getTouch;//是否接受玩家输入
+    [HideInInspector]
+    public int _comboCount = 0;//目前连击的次数
+    public string _lastSkillName;//上一次的技能名字
+    public int _jumpTime = 0;//目前连续跳跃的次数
 
     //角色固定属性
     public float _jumpForce;//跳跃力
@@ -60,41 +67,44 @@ class Hero : MonoBehaviour {
         //判断是否在空中，并在落地瞬间将状态改为静止
         if (!(isJumping = CheckJump()))
         {
+            _jumpTime = 0;
             if (_nowState == state.jumping)
             {
-                Debug.Log("111");
                 _nowState = state.still;
             }
         }
 
         //PC机上操作检测
-        if (Input.GetKeyDown(KeyCode.D))
+        if (_getTouch)
         {
-            HandSkill(_attr._skills.FindSkillByName("XuanFengTui"));
-        }
-        else if(Input.GetKeyDown(KeyCode.W))
-        {
-            HandSkill(_attr._skills.FindSkillById(0));
-        }
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            HandSkill(_attr._skills.FindSkillByName("BackJump"));
-        }
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            HandSkill(_attr._skills.FindSkillByName("ShanXi"));
-        }
-        else if (Input.GetKeyDown(KeyCode.Q))
-        {
-            HandSkill(_attr._skills.FindSkillByName("HuoQiu"));
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            HandSkill(_attr._skills.FindSkillByName("HuoYanZhangKong"));
-        }
-        else if (Input.GetKeyDown(KeyCode.R))
-        {
-            HandSkill(_attr._skills.FindSkillByName("TianFengHuoWu"));
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                HandSkill(_attr._skills.FindSkillById(0));
+            }
+            else if (Input.GetKeyDown(KeyCode.S))
+            {
+                HandSkill(_attr._skills.FindSkillByName("BackJump"));
+            }
+            else if (Input.GetKeyDown(KeyCode.A))
+            {
+                HandSkill(_attr._skills.FindSkillByName("ShanXi"));
+            }
+            else if (Input.GetKeyDown(KeyCode.Q))
+            {
+                HandSkill(_attr._skills.FindSkillByName("HuoQiu"));
+            }
+            else if (Input.GetKeyDown(KeyCode.E))
+            {
+                HandSkill(_attr._skills.FindSkillByName("HuoYanZhangKong"));
+            }
+            else if (Input.GetKeyDown(KeyCode.R))
+            {
+                HandSkill(_attr._skills.FindSkillByName("TianFengHuoWu"));
+            }
+            else if (Input.GetKeyDown(KeyCode.D))
+            {
+                HandSkill(_attr._skills.FindSkillByName("XuanFengTui"));
+            }
         }
     }
 
@@ -113,7 +123,6 @@ class Hero : MonoBehaviour {
         //放技能时每一帧改变角色状态
         if (_nowState == state.acting || _nowState == state.BeforeAT || _nowState == state.LastHalfAfterAT || _nowState == state.FirstHalfAfterAT)
         {
-            Debug.Log(_nowState);
             _actTime += Time.deltaTime;
             _nowSkill._update(this, _actTime);
         }
@@ -135,9 +144,21 @@ class Hero : MonoBehaviour {
         {
             if(skillable == 2)
             {
+                if (_comboCount > 1)
+                {
+                    return;
+                }
+                _comboCount++;
+                _lastSkillName = _nowSkill._skillName;
                 _nowSkill._end(this);
+                StartSkill(skill, true);
             }
-            StartSkill(skill);
+            else
+            {
+                _comboCount = 0;
+                _lastSkillName = "";
+                StartSkill(skill, false);
+            }
         }
     }
 
@@ -229,6 +250,7 @@ class Hero : MonoBehaviour {
         {
             GetComponent<Rigidbody2D>().AddForce(jumpDir);
             _nowState = state.jumping;
+            _jumpTime++;
         }
     }
 
@@ -253,8 +275,11 @@ class Hero : MonoBehaviour {
             Destroy(_nowSkill._instantiation);
             _nowSkill._end(this);
         }
+        Move(Vector3.zero, 0.1f);
         _nowState = state.dizzy;
         _anim.SetBool("Dizzy", true);
+        GetComponent<PolygonCollider2D>().isTrigger = false;
+        GetComponent<Rigidbody2D>().gravityScale = 5;
         Invoke("CancelDizzyState", dizzyTimeInMs / 1000f);
     }
 
@@ -319,13 +344,23 @@ class Hero : MonoBehaviour {
     }
 
     /// <summary>
+    /// 判断该角色是否在另一角色的左边
+    /// </summary>
+    /// <returns></returns>
+    public bool isLeftOfOther()
+    {
+        return transform.position.x < GameManager.GetInstance().GetOtherHero(this).transform.position.x;
+    }
+
+    /// <summary>
     /// 开始释放技能
     /// </summary>
     /// <param name="skill">需要释放的技能</param>
     /// 作者：胡皓然
-    void StartSkill(Skill skill)
+    void StartSkill(Skill skill,bool isCombo)
     {
         _nowSkill = skill;
+        _nowSkill._isCombo = isCombo;
         skill._start(this);
         _actTime = 0;
     }
@@ -365,11 +400,11 @@ class Hero : MonoBehaviour {
     //判断是否可以跳跃
     bool IsJumpable()
     {
-        if (_nowState == state.still || _nowState == state.moving || _nowState == state.blocking)
+        if (_jumpTime<1&&(_nowState == state.still || _nowState == state.moving || _nowState == state.blocking))
         {
             return true;
         }
-        return true;
+        return false;
     }
 
     //判断是否可以防御
