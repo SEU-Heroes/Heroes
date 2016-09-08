@@ -4,7 +4,8 @@ using System.Collections;
 public class HeroCreator : MonoBehaviour {
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
         GameManager.GetInstance().InstantiatePlayers();
 	}
 	

@@ -36,15 +36,24 @@ class GameManager:MonoBehaviour{
     public enum map { boat, seu };//游戏地图枚举
     public enum difficulty {none, easy, middle, difficult };//游戏难度枚举
     public enum mode { none, player, computer, story, tutorial, skillWatch };//游戏模式枚举
+    [HideInInspector]
     public int _volume = -1;//音量大小，-1为无声音
+    [HideInInspector]
     public bool _shock;//是否震动
+    [HideInInspector]
     public mode _nowMode = mode.computer;//当前的游戏模式
-    public int _roundNum;//回合数
-    public int _roundTime;//回合时间
-    public difficulty _diffi;//难度选择
+    [HideInInspector]
+    public int _roundNum = 3;//回合数
+    [HideInInspector]
+    public int _roundTime = -1;//回合时间
+    [HideInInspector]
+    public difficulty _diffi = difficulty.easy;//难度选择
+    [HideInInspector]
     public map _nowMap = map.boat;//地图选择
-    public int _HPNum;//血量
-    public int _heroesNum;//每个玩家选择的角色数
+    [HideInInspector]
+    public int _HPNum = 1;//血量
+    [HideInInspector]
+    public int _heroesNum = 1;//每个玩家选择的角色数
 
     //单例
     static GameManager _instance;
@@ -83,7 +92,14 @@ class GameManager:MonoBehaviour{
 
     void Update()
     {
-        
+        if (_isEXing&&_isTimeFlow)
+        {
+            _EXTime -= Time.deltaTime;
+            if (_EXTime <= 0)
+            {
+                EXEnd();
+            }
+        }
     }
 
     /// <summary>
@@ -116,7 +132,7 @@ class GameManager:MonoBehaviour{
     /// <returns></returns>
     public Player GetPlayer(int playerId)
     {
-        if (playerId == 1)
+        if (playerId == _playerLeft._id)
         {
             return _playerLeft;
         }
@@ -127,13 +143,37 @@ class GameManager:MonoBehaviour{
         return null;
     }
 
+    /// <summary>
+    /// 设置玩家信息
+    /// </summary>
+    /// <param name="theLeft">位置处于左边的玩家，位置处于右边的玩家</param>
+    /// <param name="theRight"></param>
     public void SetPlayers(Player theLeft,Player theRight)
     {
         _playerLeft = theLeft;
         _playerLeft.setHP(_HPNum);
+        _playerLeft._isAI = false;
 
         _playerRight = theRight;
         _playerRight.setHP(_HPNum);
+        _playerRight._isAI = (_nowMode == mode.computer);
+    }
+
+    /// <summary>
+    /// 设置玩家信息（只能用于联机模式）
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="playerId"></param>
+    public void SetPlayer(Player player, int playerId)
+    {
+        if (playerId == 1)
+        {
+            _playerLeft = player;
+        }
+        else
+        {
+            _playerRight = player;
+        }
     }
 
     /// <summary>
@@ -186,15 +226,22 @@ class GameManager:MonoBehaviour{
         _playerRight.GetHero()._isFacingLeft = true;
     }
 
+    /// <summary>
+    /// 有角色死亡
+    /// </summary>
+    /// <param name="id">死亡角色的ID</param>
+    /// 作者：胡皓然
     public void HeroDie(int id)
     {
         if (id == 1)
         {
             _playerLeft.HeroDie(_positionLeft);
+            _playerLeft.Instantiate(_positionLeft, Quaternion.identity);
         }
         else
         {
             _playerRight.HeroDie(_positionRight);
+            _playerRight.Instantiate(_positionRight, Quaternion.identity);
             _playerRight.GetHero()._isFacingLeft = true;
         }
     }
@@ -203,6 +250,7 @@ class GameManager:MonoBehaviour{
     /// 处理一个轨迹
     /// </summary>
     /// <param name="gesture"></param>
+    /// 作者：胡皓然
     public void HandleGesture(string gestureName,float match)
     {
         if (_isEXing&&_EXHero._id == _controlPlayer)
@@ -227,11 +275,26 @@ class GameManager:MonoBehaviour{
     }
 
     /// <summary>
+    /// 联机模式下接收对方传来的操作
+    /// </summary>
+    /// <param name="gesture"></param>
+    /// <param name="match"></param>
+    public void OtherControl(string gestureName, int match)
+    {
+        Skill theSkill;
+        if ((theSkill = GetPlayer(_controlPlayer).GetHero()._attr._skills.FindSkillByName(gestureName)) != null)
+        {
+            GameManager.GetInstance().GetOtherHero(GetPlayer(_controlPlayer).GetHero()).HandSkill(theSkill);
+        }
+    }
+
+    /// <summary>
     /// 使主角色释放技能
     /// </summary>
     /// <param name="playerId">技能释放者的玩家ID</param>
     /// <param name="skillName">技能名字</param>
     /// <param name="match">技能手势匹配程度</param>
+    /// 作者：胡皓然
     public void StartSkill(int playerId,string skillName, float match)
     {
         Player thePlayer = (playerId == 1 ? _playerLeft : _playerRight);
@@ -241,19 +304,20 @@ class GameManager:MonoBehaviour{
     /// <summary>
     /// EX复杂度提高
     /// </summary>
+    /// 作者：胡皓然
     public void EXLevelUp()
     {
         if (_EXLevel < 5)
         {
             _EXLevel++;
         }
-        InstantiateGesture(_EXLevel);
     }
 
     /// <summary>
     /// 开始EX必杀技
     /// </summary>
     /// <param name="hero">释放EX必杀技的角色</param>
+    /// 作者：胡皓然
     public void StartEX(Hero hero)
     {
         _isTimeFlow = true;
@@ -270,8 +334,54 @@ class GameManager:MonoBehaviour{
     }
 
     /// <summary>
+    /// 游戏结束
+    /// </summary>
+    /// <param name="hero">胜利的角色</param>
+    /// 作者：胡皓然
+    public void GameOver(Player player)
+    {
+        if (player._id == _controlPlayer)
+        {
+            MainScene._instance.WinAnim();
+        }
+        else
+        {
+            MainScene._instance.LoseAnim();
+        }
+    }
+
+    /// <summary>
+    /// 根据当前的模式选择返回到哪一个界面
+    /// </summary>
+    /// 作者：胡皓然
+    public void ReturnScene()
+    {
+
+    }
+
+
+    /// <summary>
+    /// 结束EX动画
+    /// </summary>
+    /// 作者：胡皓然
+    public void EndEXAnim()
+    {
+        InstantiateGesture(_EXLevel);
+        _isTimeFlow = true;
+    }
+
+    /// <summary>
+    /// 正常关闭游戏时的处理
+    /// </summary>
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    /// <summary>
     /// 开始EX必杀技的动画
     /// </summary>
+    /// 作者：胡皓然
     void StartEXAnim()
     {
         _isTimeFlow = false;
@@ -282,6 +392,7 @@ class GameManager:MonoBehaviour{
     /// EX模式下处理匹配的手势
     /// </summary>
     /// <param name="id">最佳匹配轨迹的ID</param>
+    /// 作者：胡皓然
     void GestureMatch(string gestureName,float match)
     {
         //手势匹配成功
@@ -300,6 +411,7 @@ class GameManager:MonoBehaviour{
     /// 在屏幕上展示一个轨迹
     /// </summary>
     /// <param name="level">轨迹复杂度等级</param>
+    /// 作者：胡皓然
     void InstantiateGesture(int level)
     {
         //实例化一个相应等级的轨迹展示预制资源
@@ -315,8 +427,8 @@ class GameManager:MonoBehaviour{
     /// 作者：胡皓然
     public void ChangeScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
         _nowScene = sceneName;
+        SceneManager.LoadScene(sceneName);
     }
 
     /// <summary>
@@ -324,6 +436,7 @@ class GameManager:MonoBehaviour{
     /// </summary>
     /// <param name="gestureName">轨迹名字</param>
     /// <returns>轨迹ID</returns>
+    /// 作者：胡皓然
     int GetGestureId(string gestureName)
     {
         //根据轨迹的名字得到相应的序号
@@ -333,6 +446,7 @@ class GameManager:MonoBehaviour{
     /// <summary>
     /// 结束EX必杀技
     /// </summary>
+    /// 作者：胡皓然
     void EXEnd()
     {
         _isEXing = false;
@@ -344,8 +458,9 @@ class GameManager:MonoBehaviour{
     /// 计算本次EX必杀技的伤害量
     /// </summary>
     /// <returns></returns>
+    /// 作者：胡皓然
     int CalculateEXHurt()
     {
-        return 0;
+        return 300 + _EXCount * 100;
     }
 }

@@ -15,6 +15,7 @@ class PrefabManager : MonoBehaviour {
 
     static public PrefabManager instance;
 
+    public GameObject[] _heroesAI;//AI角色的预制资源
     public GameObject[] _heroes;//各种角色的预制资源
     public GameObject _GestureDisplay;//展示轨迹的预制资源
 
@@ -37,11 +38,15 @@ class PrefabManager : MonoBehaviour {
     /// 根据角色ID得到角色
     /// </summary>
     /// <param name="heroId"></param>
+    /// <param name="AI">是否是带AI的角色</param>
     /// <returns>相应的角色</returns>
     /// 作者：胡皓然
-    public GameObject GetHero(int heroId)
+    public GameObject GetHero(int heroId, bool AI)
     {
-        var temp = _heroes[heroId];
+        if (AI)
+        {
+            return _heroesAI[heroId];
+        }
         return _heroes[heroId];
     }
 

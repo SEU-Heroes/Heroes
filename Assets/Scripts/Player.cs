@@ -16,13 +16,18 @@ class Player{
 
     public int _maxHP;//当前设置的最大生命值
 
-    const int _heroNum = 3;//角色数量
+    int _heroNum = 3;//角色数量
+
+    int _dieChance = 3;//玩家还可以死亡的次数
 
     HeroAttr[] _heroes;//角色属性列表
 
     Hero _nowHero;//目前的角色
 
     int _nowHeroNum = 0;//目前是第几个角色
+
+    [HideInInspector]
+    public bool _isAI;//这个角色是否是AI
 
     public Player(int id)
     {
@@ -42,6 +47,20 @@ class Player{
         _heroes[0] = ha0;
         _heroes[1] = ha1;
         _heroes[2] = ha2;
+        _heroNum = 3;
+        _dieChance = 3;
+    }
+
+    /// <summary>
+    /// 加入一个角色属性
+    /// </summary>
+    /// <param name="ha"></param>
+    /// 作者：胡皓然
+    public void SetHeroAttr(HeroAttr ha)
+    {
+        _heroes[0] = ha;
+        _heroNum = 1;
+        _dieChance = 2;
     }
 
     /// <summary>
@@ -62,7 +81,8 @@ class Player{
     /// 作者：胡皓然
     public void Instantiate(Vector3 position,Quaternion q)
     {
-        _nowHero = GameManager.GetInstance().Instantiate(GameManager._prefabManager.GetHero(_heroes[_nowHeroNum]._heroId), position, q).GetComponent<Hero>();
+        Debug.Log(position);
+        _nowHero = GameManager.GetInstance().Instantiate(GameManager._prefabManager.GetHero(_heroes[_nowHeroNum]._heroId, _isAI), position, q).GetComponent<Hero>();
         _nowHero._id = _id;
         Camera.main.GetComponent<FollowPlayers>().setPlayer(_nowHero,_id);
         _nowHero._attr = _heroes[_nowHeroNum];
@@ -80,20 +100,59 @@ class Player{
     /// <param name="position">下一个角色要生成的位置</param>
     public void HeroDie(Vector3 position)
     {
-        if (_nowHeroNum != 2)
+        _dieChance--;
+        if (_dieChance > 0)
         {
+            if (_heroNum == 3)
+            {
+                _nowHeroNum++;
+            }
             _nowHero.HeroDie();
-            _nowHeroNum++;
-            Instantiate(position,Quaternion.identity);
+            //MainScene._instance.SetHeroInfo(this);
+            //MainScene._instance.NewRound();
         }
         else
         {
-            //输赢动画
+            GameManager.GetInstance().GameOver(this);
         }
     }
 
     public void setHP(int num)
     {
         _maxHP = num * GameManager._maxHP;
+    }
+
+    /// <summary>
+    /// 根据角色数量随机设置角色
+    /// </summary>
+    public void SetRandHero()
+    {
+        if (_heroNum == 1)
+        {
+            _heroes[0] = XmlOperate.GetHeroInformation("JiXiaoke");
+        }
+        else if (_heroNum == 3)
+        {
+            _heroes[0] = XmlOperate.GetHeroInformation("JiXiaoke");
+            _heroes[1] = XmlOperate.GetHeroInformation("JiXiaoke");
+            _heroes[2] = XmlOperate.GetHeroInformation("JiXiaoke");
+        }
+    }
+
+    /// <summary>
+    /// 设置角色数量
+    /// </summary>
+    /// <param name="num"></param>
+    public void SetHeroNum(int num)
+    {
+        _heroNum = num;
+        if (_heroNum == 3)
+        {
+            _dieChance = 3;
+        }
+        else
+        {
+            _dieChance = 2;
+        }
     }
 }
